@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<head>
+    Voici les problématiques disponible
+</head>
+<body>
+   <ul>
+       {%for i in range(0,len)%}
+    <li>
+        <a href = '/problematique/{{liste_prob[i][0]}}'>{{liste_prob[i][2]}}</a>
+    </li>
+       {%endfor%}
+   </ul>
+</body>
