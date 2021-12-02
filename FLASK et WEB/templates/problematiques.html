@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+{% extends 'header_layout.html' %}
+
+{% block header %}
 <head>
     Voici les problématiques disponible
 </head>
@@ -10,4 +12,4 @@
     </li>
        {%endfor%}
    </ul>
-</body>
+{% endblock %}

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="../static/DrevocratiaS1.css">
+<title>Drevocratia</title>
+</head>
+<body>
+<header>
+    <div class="inner">
+        <nav>
+            <li><span><a href="/">Accueil</a></span></li>
+            <li><span><a href="/problematiques">Problématiques</a></span></li>
+            <li><span><a href="/help">Aide</a></span></li>
+            {%if not session.name%}
+            <li><span><a href="/login" class="loginbutton">Login</a></span></li>
+            {% else %}
+            <li><span><a href="/logout" class="loginbutton">Logout of {{session.name}}</a></span></li>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+</body>
+{%block header%} {% endblock %}
+</html>
