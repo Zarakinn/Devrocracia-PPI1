@@ -44,17 +44,19 @@ def Creation_Proposition(Utilisateur,Sous_probleme_id,titre,description) -> None
         print("Erreur lors de l'insertion dans la table propositions", error)
 
 
-def Get_Selected_Propostion(probleme_id) -> int :
+def Get_Selected_Propostion(id) -> int :
     """cherche toutes les propositions associées aux problèmes, retourne l’id celle qui à le plus de vote"""
     try:
-        connexion = sqlite3.connect("database.db")
+        connexion = sqlite3.connect("database2.db")
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
-        cursor.execute("SELECT max(vote) FROM propositions ")
+        cursor.execute("SELECT max(nb_vote) FROM propositions ")
         res=cursor.fetchone()
         res=res[0]
-        sql = "SELECT PR.id FROM propositions PR, pb PB WHERE vote=res AND PR.id=PB.probleme_id"
-        new_id =cursor.execute(sql)
+        print(res)
+        cursor.execute("SELECT PR.id FROM propositions PR JOIN  pb PB ON PR.id=? WHERE nb_vote=? ", (id,res,))
+        new_id=cursor.fetchone()
+        new_id=new_id[0]
         print("Enregistrements éxécutés avec succès dans la table pb")
         cursor.close()
         connexion.close()
@@ -62,6 +64,9 @@ def Get_Selected_Propostion(probleme_id) -> int :
         return new_id
     except sqlite3.Error as error:
         print("Erreur lors de l'insertion dans la table pb", error)
+
+
+print(Get_Selected_Propostion(1))
 
 
 def Etend_Branche(utilisateur,sous_problème) -> None :
@@ -88,26 +93,23 @@ def Vote(utilisateur, proposition) -> None :
     return None 
 
 
-def EnvoieMessage(utilisateur,texte,sous_proposition) -> None :
+def EnvoieMessage(utilisateur,texte,sous_proposition_id) -> None :
     """créé une ligne dans le schéma message, l’associe aux sous problème"""
     try:
-        connexion = sqlite3.connect('database.db')
+        connexion = sqlite3.connect('database2.db')
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
-        sql = "INSERT INTO forum (id,texte) VALUES (?, ?)"
-        donnes=[(utilisateur,texte)]
+        cursor.execute("SELECT max(id) FROM message ")
+        res=cursor.fetchone()
+        res=res[0]+1
+        sql = "INSERT INTO message (id,texte,utilisateur_id,sous_pb_id) VALUES (?, ?, ?, ?)"
+        donnes=[(res,texte,utilisateur,sous_proposition_id)]
         cursor.executemany(sql,donnes )
         connexion.commit()
-        sql2 = "INSERT INTO sous_pb (id,titre) VALUES (?, ?)"
-        donnes2=[(utilisateur,sous_proposition)]
-        cursor.executemany(sql2, donnes2)
-        connexion.commit()
-        print("Enregistrements insérés avec succès dans la table forum/sous_pb")
+        print("Enregistrements insérés avec succès dans la table message")
         cursor.close()
         connexion.close()
         print("Connexion SQLite est fermée")
     except sqlite3.Error as error:
-        print("Erreur lors de l'insertion dans la table forum/sous_pb", error)
-
-
+        print("Erreur lors de l'insertion dans la table message/sous_pb", error)
 
