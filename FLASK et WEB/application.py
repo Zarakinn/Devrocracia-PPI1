@@ -21,7 +21,7 @@ def problematiques():
                 [2,'01-12-2021','Avancement du projet','Je pense qu on est trop fort, on avance bien',2]
                 ]
                  # querry de type SELECT * FROM problematiques
-    # besoin de traiter les données avant de les renvoyers ?
+    # besoin de traiter les données avant de les renvoyer ?
     return render_template('problematiques.html',liste_prob = liste_prob,len = len(liste_prob)) 
 
 
