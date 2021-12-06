@@ -47,7 +47,7 @@ def Creation_Proposition(Utilisateur,Sous_probleme_id,titre,description) -> None
 def Get_Selected_Propostion(id) -> int :
     """cherche toutes les propositions associées aux problèmes, retourne l’id celle qui à le plus de vote"""
     try:
-        connexion = sqlite3.connect("database2.db")
+        connexion = sqlite3.connect("database.db")
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
         cursor.execute("SELECT max(nb_vote) FROM propositions ")
@@ -96,7 +96,7 @@ def Vote(utilisateur, proposition) -> None :
 def EnvoieMessage(utilisateur,texte,sous_proposition_id) -> None :
     """créé une ligne dans le schéma message, l’associe aux sous problème"""
     try:
-        connexion = sqlite3.connect('database2.db')
+        connexion = sqlite3.connect('database.db')
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
         cursor.execute("SELECT max(id) FROM message ")
@@ -113,3 +113,52 @@ def EnvoieMessage(utilisateur,texte,sous_proposition_id) -> None :
     except sqlite3.Error as error:
         print("Erreur lors de l'insertion dans la table message/sous_pb", error)
 
+
+## Récupération de données à afficher
+
+def GetProblematiques() -> list:
+    try:
+        connexion = sqlite3.connect('database.db')
+        cursor = connexion.cursor()
+        print("Connexion réussie à SQLite")
+        sql_request = "SELECT * FROM pb"
+        cursor.execute(sql_request )
+        pbs = cursor.fetchall()
+        print("Récupération des problématiques réussi")
+        cursor.close()
+        connexion.close()
+        print("Connexion SQLite est fermée")
+        return pbs
+    except sqlite3.Error as error:
+        print("Erreur lors de la récupération des problématiques", error)
+
+def GetSousProblematiques(id_prob : int) -> list:
+    try:
+        connexion = sqlite3.connect('database.db')
+        cursor = connexion.cursor()
+        print("Connexion réussie à SQLite")
+
+        liste_spbs = []
+
+        cursor.execute("SELECT * FROM sous_pb WHERE pb_parent_id = ? AND id=sous_pb_parent_id ",(id_prob))
+        spb = cursor.fetchone()
+        liste_spbs.append(spb)
+
+        b = True
+        while b:
+            cursor.execute("SELECT * FROM sous_pb WHERE sous_pb_parent_id = ?", liste_spbs[len(liste_spbs)][4]) # on cherche si la derniere sous proposition a un enfant
+            spb = cursor.fetchone()
+            if spb == None:
+                b = False
+                break
+            else :
+                liste_spbs.append(spb)
+
+
+        print("Récupération des sous_problématiques réussi")
+        cursor.close()
+        connexion.close()
+        print("Connexion SQLite est fermée")
+        return 
+    except sqlite3.Error as error:
+        print("Erreur lors de la récupération des sous-problématiques", error)
