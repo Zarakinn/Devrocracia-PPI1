@@ -1,1 +1,7 @@
-1,1,'plantons des arbres.','les arbres sont pas cher et joli',0
+1,1,'plantons des arbres.','les arbres sont pas cher et joli',3
+2,1,'plantons des fleurs','les fleurs sont raffinees',0
+3,2,'reduire les taxes','no taxation',0
+4,2,'revenu universel','miam l'argent',0
+5,3,'proposer des poubelles de tri','les arbres sont pas cher et joli',0
+5,3,'sensibiliser','c'est important de sensibiliser',0
+5,4,'dans les troittoirs','il faudra juster faire un trou',0
