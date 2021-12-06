@@ -19,14 +19,21 @@ def help():
 @app.route('/problematiques')
 def problematiques():
     liste_prob = fonctions_pratique.GetProblematiques()
-    return render_template('problematiques.html',liste_prob = liste_prob,len = len(liste_prob)) 
+    len = 0
+    if liste_prob != None:
+        len  = len(liste_prob)
+    return render_template('problematiques.html',liste_prob = liste_prob,len = len) 
 
 
 @app.route('/problematique/<int:id_prob>')
 def problematique(id_prob):
 
     spbs = fonctions_pratique.GetSousProblematiques(id_prob)
-    return render_template('problematique.html',spbs = spbs)
+    if spbs == None or spbs == []:
+        raise "il n'y pas de sous problématique associé, mauvaise initialisation"
+    id_last_sous_prob = spbs[len(spbs)][4]
+    props = fonctions_pratique.GetPropositions(id_last_sous_prob)
+    return render_template('problematique.html',spbs = spbs,props=props)
 
 @app.route('/login', methods=["GET","POST"])
 def login():
