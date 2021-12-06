@@ -6,10 +6,6 @@
     <p id = 'Desc'>
         Drevocracia est un outil de résolution de problème participatif qui permet aux utilisateurs de construire progressivement une solution à un problème local. Le but est d’éviter le piège de la trop simplification de la participation souvent réduite à voter “oui” ou “non” à des questions parfois beaucoup trop complexes pour être ramenées à des choix binaires. L’idée est de créer un arbre de décision où chaque citoyen vote à chaque nœud. Le nombre de feuilles disponible et la hauteur de l’arbre casse la binarité des choix et permet de poser successivement des questions sur différentes modalités du problèmes.
     </p>
-    {% if session.name%}
-    <p>Vous êtes connecter en tant que {{session.name}}</p>
-    <a href="/logout">Log out</a>
-    {% endif %}
     <a class="prob-button" href="/problematiques">Problématiques</a>
 </body>
 {% endblock %}
