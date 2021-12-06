@@ -6,18 +6,16 @@
 </head>
 <body>
 <header>
-    <div class="inner">
-        <nav>
-            <li><span><a href="/">Accueil</a></span></li>
-            <li><span><a href="/problematiques">Problématiques</a></span></li>
-            <li><span><a href="/help">Aide</a></span></li>
-            {%if not session.name%}
-            <li><span><a href="/login" class="loginbutton">Login</a></span></li>
+    <nav class="inheader">
+        <li><a href="/">Accueil</a></li>
+        <li><a href="/problematiques">Problématiques</a></li>
+        <li><a href="/help">Aide</a></li>
+        {%if not session.name%}
+        <li><a href="/login" class="logbutton">Login</a></li>
             {% else %}
-            <li><span><a href="/logout" class="loginbutton">Logout of {{session.name}}</a></span></li>
-            {% endif %}
-        </nav>
-    </div>
+        <li><a href="/logout" class="logbutton">Logout of {{session.name}}</a></li>
+        {% endif %}
+    </nav>
 </header>
 </body>
 {%block header%} {% endblock %}
