@@ -1,0 +1,9 @@
+.open database.db
+.read tables.sql
+.separator ,
+.import msg.csv msg
+.import pb.csv pb 
+.import propositions.csv propositions
+.import sous_pb.csv sous_pb
+.import votes.csv votes
+.import utilisateurs.csv utilisateurs
