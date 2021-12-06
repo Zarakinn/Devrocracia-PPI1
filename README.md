@@ -9,11 +9,11 @@ Gérald Oster <<gerald.oster@telecomnancy.eu>>
 [Le sujet détaillé est disponible en version PDF](./Projet_2021_DP.pdf)
 
 **Membres du groupe** :
-- À compléter
-- À compléter
-- À compléter
-- À compléter
+- Valentin Chanel
+- Victor Voisin
+- Thomas Pallet
+- Elyas Elaziz
 
 ## Description du projet
 
-À compléter
+Drevocracia est un utilitaire de résolution de problème démocratique participatif.
