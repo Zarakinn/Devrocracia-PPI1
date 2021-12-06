@@ -216,6 +216,8 @@ db.sqlite3-journal
 # Flask stuff:
 instance/
 .webassets-cache
+'FLASK et WEB/flask_session/'
+flask_session/
 
 # Scrapy stuff:
 .scrapy
