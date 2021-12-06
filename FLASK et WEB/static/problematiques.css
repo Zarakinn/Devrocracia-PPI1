@@ -1,0 +1,18 @@
+h1 {
+    font-family: Verdana;
+    color: #000000;
+    text-align: center;
+}
+a.prob-button{
+	background-color: #1ab26b;
+	width:max-content;
+	border:none;
+	color:white;
+    padding: 10px 20px;
+	text-align: center;
+	font-size:64px;
+    border-radius: 20px;
+	margin: 30px auto 0px auto;
+	cursor:pointer;
+	display:grid;
+}
