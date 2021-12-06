@@ -6,6 +6,9 @@
     Voici la problématique d'id :{{pb}}
 </head>
 <body>
+    {% for i in spbs %}
+        <p> {{spbs[i]}}</p>
+    {% endfor %}
 </body>
 
 {% endblock %}
