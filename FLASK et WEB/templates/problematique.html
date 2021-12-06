@@ -10,7 +10,9 @@
         <p> {{i}}</p>
     {% endfor %}
     <p>Voici les propositions associés aux sous-problèmes actuelles :</p>
-    
+    {% for j in props%}
+    {{j}}
+    {%endfor%}
 </body>
 
 {% endblock %}

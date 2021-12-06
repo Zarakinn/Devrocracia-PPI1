@@ -128,7 +128,7 @@ def EnvoieMessage(utilisateur,texte,sous_proposition_id) -> None :
 
 def GetProblematiques() -> list:
     try:
-        connexion = sqlite3.connect('database.db')
+        connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
         sql_request = "SELECT * FROM pb"
@@ -142,6 +142,8 @@ def GetProblematiques() -> list:
     except sqlite3.Error as error:
         print("Erreur lors de la récupération des problématiques", error)
 
+
+
 def GetSousProblematiques(id_prob : int) -> list:
     try:
         connexion = sqlite3.connect(database)
@@ -150,14 +152,15 @@ def GetSousProblematiques(id_prob : int) -> list:
 
         liste_spbs = []
 
-        cursor.execute("SELECT * FROM sous_pb WHERE pb_parent_id = ? AND id=sous_pb_parent_id ",(id_prob))
+        cursor.execute("SELECT * FROM sous_pb WHERE pb_parent_id = ? AND id=sous_pb_parent_id ",(id_prob,))
         spb = cursor.fetchone()
         liste_spbs.append(spb)
 
         b = True
         while b:
-            cursor.execute("SELECT * FROM sous_pb WHERE sous_pb_parent_id = ?", liste_spbs[len(liste_spbs)][4]) # on cherche si la derniere sous proposition a un enfant
+            cursor.execute("SELECT * FROM sous_pb WHERE sous_pb_parent_id = ? AND NOT id=sous_pb_parent_id", (liste_spbs[-1][0],)) # on cherche si la derniere sous proposition a un enfant
             spb = cursor.fetchone()
+            print(spb)
             if spb == None:
                 b = False
                 break
@@ -169,19 +172,17 @@ def GetSousProblematiques(id_prob : int) -> list:
         cursor.close()
         connexion.close()
         print("Connexion SQLite est fermée")
-        return 
+        return liste_spbs
     except sqlite3.Error as error:
         print("Erreur lors de la récupération des sous-problématiques", error)
 
-print(GetSousProblematiques(1))
-
 def GetPropositions(id_sous_prob : int) -> list:
     try:
-        connexion = sqlite3.connect('database.db')
+        connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
 
-        cursor.execute("SELECT * FROM propositions WHERE sous_pb_id = ?",(id_sous_prob))
+        cursor.execute("SELECT * FROM propositions WHERE sous_pb_id = ?",(id_sous_prob,))
         liste_sous_props = cursor.fetchall()
         
         print("Récupération des sous_problématiques réussi")
