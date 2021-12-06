@@ -1,0 +1,13 @@
+a.prob-button{
+	background-color: #1ab26b;
+	width:max-content;
+	border:none;
+	color:white;
+    padding: 10px 20px;
+	text-align: center;
+	font-size:64px;
+    border-radius: 4px;
+	margin: 0 auto;
+	cursor:pointer;
+	display:grid;
+}
