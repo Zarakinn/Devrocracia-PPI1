@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import sqlite3
 
+database = "data/database.db"
+
+
 def Creation_Problemes(titre,description,utilisateur) -> None :
     """calcule de la date, d’un id unique et création d’une ligne dans le schéma problématique"""
     try:
@@ -12,7 +15,7 @@ def Creation_Problemes(titre,description,utilisateur) -> None :
         date=date[0]
         cursor.execute("SELECT max(id) FROM pb ")
         new_id=cursor.fetchone()
-        new_id=res[0]+1
+        new_id=new_id[0]+1
         sql = "INSERT INTO pb (id,DateCreation,titre,texte,utilisateur_id) VALUES (?, ?, ?, ?,?)"
         donnees=[(new_id,date,titre,description,utilisateur)]
         cursor.executemany(sql, donnees)
@@ -58,7 +61,7 @@ def Get_Selected_Propostion(sous_prob_id) -> int :
         nb_vote_max=cursor.fetchone()
         nb_vote_max=nb_vote_max[0]
         print("Le maximum de vote est " + str(nb_vote_max))
-        cursor.execute("SELECT PR.id FROM propositions WHERE sous_pb_id=? AND nb_vote=? ", (sous_prob_id,nb_vote_max,))
+        cursor.execute("SELECT PR.id FROM propositions WHERE sous_pb_id=? AND nb_vote=? ", (sous_prob_id,nb_vote_max))
         id_best_prop=cursor.fetchone()
         id_best_prop=id_best_prop[0]
         print("Enregistrements éxécutés avec succès dans la table pb")
@@ -141,7 +144,7 @@ def GetProblematiques() -> list:
 
 def GetSousProblematiques(id_prob : int) -> list:
     try:
-        connexion = sqlite3.connect('database.db')
+        connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
 
@@ -170,6 +173,7 @@ def GetSousProblematiques(id_prob : int) -> list:
     except sqlite3.Error as error:
         print("Erreur lors de la récupération des sous-problématiques", error)
 
+print(GetSousProblematiques(1))
 
 def GetPropositions(id_sous_prob : int) -> list:
     try:
