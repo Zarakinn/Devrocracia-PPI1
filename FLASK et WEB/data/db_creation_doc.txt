@@ -1,3 +1,5 @@
+launch sqlite3 and type the following (depending on what you want to update)
+
 .open database.db
 .read tables.sql
 .separator ,
