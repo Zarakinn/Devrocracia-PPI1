@@ -4,21 +4,34 @@ import sqlite3
 database = "data/database.db"
 
 
-def Creation_Problemes(titre,description,utilisateur) -> None :
-    """calcule de la date, d’un id unique et création d’une ligne dans le schéma problématique"""
+def Creation_Problemes(titre,description,spb_titre,utilisateur) -> None :
+    """calcule de la date, d’un id unique et création d’une ligne dans le schéma problématique et sous problematique associée"""
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
+
         cursor.execute("SELECT date('now')")
         date =cursor.fetchone()
         date=date[0]
+
         cursor.execute("SELECT max(id) FROM pb ")
-        new_id=cursor.fetchone()
-        new_id=new_id[0]+1
-        sql = "INSERT INTO pb (id,DateCreation,titre,texte,utilisateur_id) VALUES (?, ?, ?, ?,?)"
-        donnees=[(new_id,date,titre,description,utilisateur)]
-        cursor.executemany(sql, donnees)
+        new_pb_id=cursor.fetchone()
+        new_pb_id=new_pb_id[0]+1
+
+        sql_pb = "INSERT INTO pb (id,DateCreation,titre,texte,utilisateur_id) VALUES (?,?,?,?,?)"
+        donnees_pb=[(new_pb_id,date,titre,description,utilisateur)] #attetion, utilisateur est text et non id
+        cursor.executemany(sql_pb, donnees_pb)
+
+
+        cursor.execute("SELECT max(id) FROM sous_pb ")
+        new_spb_id=cursor.fetchone()
+        new_spb_id=new_spb_id[0]+1
+
+        sql_spb = "INSERT INTO sous_pb (id,DateCreation,titre ,auteur_id, sous_pb_parent_id, pb_parent_id) VALUES (?,?,?,?,?,?)"
+        donnees_spb=[(new_spb_id,date,spb_titre,utilisateur,new_spb_id,new_pb_id)]
+        cursor.executemany(sql_spb, donnees_spb)
+
         connexion.commit()
         print("Enregistrements insérés avec succès dans la table pb")
         cursor.close()
@@ -26,7 +39,7 @@ def Creation_Problemes(titre,description,utilisateur) -> None :
         print("Connexion SQLite est fermée")
     except sqlite3.Error as error:
         print("Erreur lors de l'insertion dans la table pb", error)
-
+    
 
 def Creation_Proposition(Sous_probleme_id,titre,description) -> None :
     """ajoute une proposition pour un sous_problème"""

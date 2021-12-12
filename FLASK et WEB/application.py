@@ -25,11 +25,18 @@ def problematiques():
     if request.method == "POST":
         new_pb_title = request.form.get("new_pb_title")
         new_pb_desc = request.form.get("new_pb_desc")
+        first_spb = request.form.get("first_spb")
         if new_pb_desc is not None and new_pb_title is not None:
-            fonctions_pratique.Creation_Problemes(new_pb_title, new_pb_desc, session["name"])
+            fonctions_pratique.Creation_Problemes(new_pb_title, new_pb_desc, first_spb, session["name"])
             print(new_pb_title,new_pb_desc,session["name"])
-    return render_template('problematiques.html',liste_prob = liste_prob,len = len_) 
+            return redirect('/problematiques')
+    return render_template('problematiques.html',liste_prob = liste_prob,len = len_, showform=request.args.get("showform")
 
+
+) 
+
+
+@app.route('/problematique/<int:id_prob>')
 
 @app.route('/problematique/<int:id_prob>')
 def problematique(id_prob):
