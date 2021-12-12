@@ -7,7 +7,7 @@ database = "data/database.db"
 def Creation_Problemes(titre,description,utilisateur) -> None :
     """calcule de la date, d’un id unique et création d’une ligne dans le schéma problématique"""
     try:
-        connexion = sqlite3.connect("database.db")
+        connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
         cursor.execute("SELECT date('now')")
@@ -31,7 +31,7 @@ def Creation_Problemes(titre,description,utilisateur) -> None :
 def Creation_Proposition(Sous_probleme_id,titre,description) -> None :
     """ajoute une proposition pour un sous_problème"""
     try:
-        connexion = sqlite3.connect("database.db")
+        connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
 
@@ -54,7 +54,7 @@ def Creation_Proposition(Sous_probleme_id,titre,description) -> None :
 def Get_Selected_Propostion(sous_prob_id) -> int :
     """cherche toutes les propositions associées aux problèmes, retourne l’id celle qui à le plus de vote"""
     try:
-        connexion = sqlite3.connect("database.db")
+        connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
         cursor.execute("SELECT max(nb_vote) FROM propositions ")
@@ -76,7 +76,7 @@ def Etend_Branche(titre,utilisateur_id,sous_pb_parent) -> None :
     """créé un nouveau sous problème en fonction de la proposition choisit, créé les données associé dans la base de données 
     -> le en fonction de sous proposition à besoin d'une fonction pour savoir qui a eu le plus de vote"""
     try:
-        connexion = sqlite3.connect("database.db")
+        connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
 
