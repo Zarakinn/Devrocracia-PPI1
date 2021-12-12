@@ -10,7 +10,21 @@ a.prob-button{
 	color:white;
     padding: 10px 20px;
 	text-align: center;
-	font-size:64px;
+	font-size:52px;
+    border-radius: 20px;
+	margin: 30px auto 0px auto;
+	cursor:pointer;
+	display:grid;
+}
+
+form.form_new_pb{    /*copie de ci dessus mais avec cases plus larges*/
+	background-color: #1ab26b;
+	width:600px;
+	border:none;
+	color:white;
+    padding: 10px 20px;
+	text-align: center;
+	font-size:52px;
     border-radius: 20px;
 	margin: 30px auto 0px auto;
 	cursor:pointer;

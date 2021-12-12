@@ -5,12 +5,18 @@
     text-decoration: none;
 }
 
+.content{
+    margin-top: 102px;
+}
+
 header{
     width: 100vw;
     height: 40px;
     border-bottom: solid 1px rgba(7%, 7%, 7%, 0.2);
 	background-color: #333;
 	padding: 5px 10px;
+    position: sticky;          /*le header suit le défilement, utile pour les longues pages*/
+    top:0;
 }
 
 header .inheader{
