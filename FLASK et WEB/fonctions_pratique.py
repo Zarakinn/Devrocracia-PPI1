@@ -20,7 +20,7 @@ def Creation_Problemes(titre,description,spb_titre,utilisateur) -> None :
         new_pb_id=new_pb_id[0]+1
 
         sql_pb = "INSERT INTO pb (id,DateCreation,titre,texte,utilisateur_id) VALUES (?,?,?,?,?)"
-        donnees_pb=[(new_pb_id,date,titre,description,utilisateur)] #attetion, utilisateur est text et non id
+        donnees_pb=[(new_pb_id,date,titre,description,utilisateur)] #attention, utilisateur est text et non id
         cursor.executemany(sql_pb, donnees_pb)
 
 
@@ -49,7 +49,7 @@ def Creation_Proposition(Sous_probleme_id,titre,description) -> None :
         print("Connexion réussie à SQLite")
 
         cursor.execute("SELECT max(id) FROM propositions ")
-        new_id=cursor.fetchone()
+        new_id=cursor.fetchone()[0] + 1
 
         donnees=[(new_id,Sous_probleme_id,titre,description,0)]
         sql = "INSERT INTO propositions (id,sous_pb_id,titre,texte,nb_vote) VALUES (?, ?, ?, ?,?)"
@@ -62,7 +62,6 @@ def Creation_Proposition(Sous_probleme_id,titre,description) -> None :
         print("Connexion SQLite est fermée")
     except sqlite3.Error as error:
         print("Erreur lors de l'insertion dans la table propositions", error)
-
 
 def Get_Selected_Propostion(sous_prob_id) -> int :
     """cherche toutes les propositions associées aux problèmes, retourne l’id celle qui à le plus de vote"""
@@ -119,7 +118,7 @@ def Vote(utilisateur, proposition) -> None :
 def EnvoieMessage(utilisateur,texte,sous_proposition_id) -> None :
     """créé une ligne dans le schéma message, l’associe aux sous problème"""
     try:
-        connexion = sqlite3.connect('database.db')
+        connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
         cursor.execute("SELECT max(id) FROM message ")
@@ -173,7 +172,6 @@ def GetSousProblematiques(id_prob : int) -> list:
         while b:
             cursor.execute("SELECT * FROM sous_pb WHERE sous_pb_parent_id = ? AND NOT id=sous_pb_parent_id", (liste_spbs[-1][0],)) # on cherche si la derniere sous proposition a un enfant
             spb = cursor.fetchone()
-            print(spb)
             if spb == None:
                 b = False
                 break
@@ -198,7 +196,7 @@ def GetPropositions(id_sous_prob : int) -> list:
         cursor.execute("SELECT * FROM propositions WHERE sous_pb_id = ?",(id_sous_prob,))
         liste_sous_props = cursor.fetchall()
         
-        print("Récupération des sous_problématiques réussi")
+        print("Récupération des propositions réussi")
         cursor.close()
         connexion.close()
         print("Connexion SQLite est fermée")

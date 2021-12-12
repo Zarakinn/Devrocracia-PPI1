@@ -38,6 +38,7 @@ def problematiques():
 
 @app.route('/problematique/<int:id_prob>')
 
+
 @app.route('/problematique/<int:id_prob>')
 def problematique(id_prob):
 
@@ -46,7 +47,17 @@ def problematique(id_prob):
         raise "il n'y pas de sous problématique associé, mauvaise initialisation"
     id_last_sous_prob = spbs[-1][0]
     props = fonctions_pratique.GetPropositions(id_last_sous_prob)
-    return render_template('problematique.html',spbs = spbs,props=props)
+    return render_template('problematique.html',id_prob=id_prob,spbs = spbs,props=props,len_spbs=len(spbs))
+
+@app.route('/problematique/ajout_prop/<int:id_prob>/<int:id_sous_pb>',methods=["GET","POST"])
+def Ajoute_prop(id_prob,id_sous_pb):
+
+    if request.method == "GET":
+        return render_template("ajout_proposition.html",id_prob=id_prob,id_sous_pb=id_sous_pb)
+    else :
+        print("Ajoute d'une proposition")
+        fonctions_pratique.Creation_Proposition(id_sous_pb,request.form.get("titre"),request.form.get("texte"))
+        return redirect("/problematique/"+str(id_prob))    # vulnerable si je fait une simple concatenation ???
 
 @app.route('/login', methods=["GET","POST"])
 def login():

@@ -3,7 +3,7 @@
 {% block header %}
 
 <head>
-    Voici la problématique d'id :{{pb}}
+    Voici la problématique d'id :{{id_prob}}
 </head>
 <body>
     {% for i in spbs %}
@@ -13,6 +13,10 @@
     {% for j in props%}
     {{j}}
     {%endfor%}
+    <a>
+    Cliquez ici pour ajouter une proposition UwU :
+    <a href="/problematique/ajout_prop/{{id_prob}}/{{spbs[len_spbs-1][0]}}">Ajout proposition</a>
+    </a>
 </body>
 
 {% endblock %}
