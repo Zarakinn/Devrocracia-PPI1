@@ -16,12 +16,18 @@ def main():
 def help():
     return render_template('help.html')
 
-@app.route('/problematiques')
+@app.route('/problematiques', methods=["GET","POST"])
 def problematiques():
     liste_prob = fonctions_pratique.GetProblematiques()
     len_ = 0
     if liste_prob != None:
         len_  = len(liste_prob)
+    if request.method == "POST":
+        new_pb_title = request.form.get("new_pb_title")
+        new_pb_desc = request.form.get("new_pb_desc")
+        if new_pb_desc is not None and new_pb_title is not None:
+            fonctions_pratique.Creation_Problemes(new_pb_title, new_pb_desc, session["name"])
+            print(new_pb_title,new_pb_desc,session["name"])
     return render_template('problematiques.html',liste_prob = liste_prob,len = len_) 
 
 
