@@ -30,13 +30,7 @@ def problematiques():
             fonctions_pratique.Creation_Problemes(new_pb_title, new_pb_desc, first_spb, session["name"])
             print(new_pb_title,new_pb_desc,session["name"])
             return redirect('/problematiques')
-    return render_template('problematiques.html',liste_prob = liste_prob,len = len_, showform=request.args.get("showform")
-
-
-) 
-
-
-@app.route('/problematique/<int:id_prob>')
+    return render_template('problematiques.html',liste_prob = liste_prob,len = len_, showform=request.args.get("showform"))
 
 
 @app.route('/problematique/<int:id_prob>')
@@ -47,6 +41,13 @@ def problematique(id_prob):
         raise "il n'y pas de sous problématique associé, mauvaise initialisation"
     id_last_sous_prob = spbs[-1][0]
     props = fonctions_pratique.GetPropositions(id_last_sous_prob)
+
+    vote_id = request.args.get("id")
+
+    if vote_id != None and session["name"] != None:
+        fonctions_pratique.Vote(vote_id, id_prob, session["name"])
+        return redirect("/problematique/"+str(id_prob))
+
     return render_template('problematique.html',id_prob=id_prob,spbs = spbs,props=props,len_spbs=len(spbs))
 
 @app.route('/problematique/ajout_prop/<int:id_prob>/<int:id_sous_pb>',methods=["GET","POST"])

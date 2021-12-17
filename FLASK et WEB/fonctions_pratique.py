@@ -110,8 +110,44 @@ def Etend_Branche(titre,utilisateur_id,sous_pb_parent) -> None :
         print("Erreur lors de l'insertion dans la table sous_pb", error)
 
 
-def Vote(utilisateur, proposition) -> None :
+def Vote(proposition_id, id_prob, utilisateur) -> None :
     """vérifie contrainte d’intégrité, éligibilité aux votes et change compte de vote"""
+    try:
+    #removing previous vote
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+        print("Connexion réussie à SQLite")
+
+        cursor.execute("SELECT max(id) FROM sous_pb WHERE pb_parent_id =" + str(id_prob))
+        sous_pb_id = cursor.fetchone()[0]
+
+        #decrease vote count if user already voted in the same spb
+        sql = " UPDATE propositions SET nb_vote = (nb_vote - 1) WHERE id = \
+            (SELECT proposition_id FROM votes where utilisateur = ? and sous_pb_id = ?)"
+        donnees =[(utilisateur, sous_pb_id)]
+        print(utilisateur, sous_pb_id)
+        cursor.executemany(sql, donnees)
+        #remove the vote occurence on the table vote
+        sql = "DELETE FROM votes where utilisateur = ? and sous_pb_id = ?"
+        donnees = [(utilisateur, sous_pb_id)]        
+        cursor.executemany(sql, donnees)
+    #adding new one
+        sql = "INSERT INTO votes (utilisateur, proposition_id, sous_pb_id) VALUES (?,?,?)"
+        donnees=[(utilisateur, proposition_id, sous_pb_id)] #attention, utilisateur est text et non id
+        cursor.executemany(sql, donnees)
+
+        sql = " UPDATE propositions SET nb_vote = (nb_vote + 1) WHERE id = ?"
+        donnees =[(proposition_id,)]
+        cursor.executemany(sql, donnees)
+
+        connexion.commit()
+        print("Vote comptabilisé avec succès !")
+        cursor.close()
+        connexion.close()
+        print("Connexion SQLite est fermée")
+    except sqlite3.Error as error:
+        print("Erreur lors de l'insertion dans la table pb", error)
+
     return None 
 
 

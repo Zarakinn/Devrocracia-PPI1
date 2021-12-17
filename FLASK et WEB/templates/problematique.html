@@ -9,12 +9,11 @@
     {% for i in spbs %}
         <p> {{i}}</p>
     {% endfor %}
-    <p>Voici les propositions associés aux sous-problèmes actuelles :</p>
+    <p><br />Voici les propositions associés aux sous-problèmes actuelles :</p>
     {% for j in props%}
-    {{j}}
+    <a class="prob-button" href="/problematique/{{id_prob}}?id={{j[0]}}">{{j}}</a>
     {%endfor%}
-    <a>
-    Cliquez ici pour ajouter une proposition UwU :
+    <p><br />Cliquez ici pour ajouter une proposition UwU :</p>
     <a href="/problematique/ajout_prop/{{id_prob}}/{{spbs[len_spbs-1][0]}}">Ajout proposition</a>
     </a>
 </body>
