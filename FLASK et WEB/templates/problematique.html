@@ -10,12 +10,25 @@
         <p> {{i}}</p>
     {% endfor %}
     <p><br />Voici les propositions associés aux sous-problèmes actuelles :</p>
-    {% for j in props%}
-    <a class="prob-button" href="/problematique/{{id_prob}}?id={{j[0]}}">{{j}}</a>
-    {%endfor%}
-    <p><br />Cliquez ici pour ajouter une proposition UwU :</p>
-    <a href="/problematique/ajout_prop/{{id_prob}}/{{spbs[len_spbs-1][0]}}">Ajout proposition</a>
-    </a>
+
+    {% if session.name %}
+        {% for j in props%}
+            {% if (j[O]==voted_prop) %}
+                <a class="prob-button-selected" href="/problematique/{{id_prob}}?id={{j[0]}}">Tu as  voté pour :{{j}}</a>
+            {% else %}
+                {{j[0] == voted_prop}}
+                <a class="prob-button-not-selected" href="/problematique/{{id_prob}}?id={{j[0]}}">{{j}}</a>
+            {% endif %}
+        {%endfor%}
+        <p><br />Cliquez ici pour ajouter une proposition:</p>
+        <a href="/problematique/ajout_prop/{{id_prob}}/{{spbs[len_spbs-1][0]}}">Ajout proposition</a>
+        </a>
+    {%else %}
+        {% for j in props%}
+            <a class="prob-button-not-selected">{{j}}</a>
+        {%endfor%}
+        <p><br />Connecte-toi pour ajouter des propositions ou voter</p>
+    {% endif %}
 </body>
 
 {% endblock %}

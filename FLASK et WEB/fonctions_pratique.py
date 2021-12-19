@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from re import U
 import sqlite3
 
 database = "data/database.db"
@@ -63,7 +64,28 @@ def Creation_Proposition(Sous_probleme_id,titre,description) -> None :
     except sqlite3.Error as error:
         print("Erreur lors de l'insertion dans la table propositions", error)
 
-def Get_Selected_Propostion(sous_prob_id) -> int :
+def Get_Solution_Voter_by_User(sous_prob_id, user) -> int:
+    try:
+    #removing previous vote
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+        print("Connexion réussie à SQLite")
+
+        cursor.execute("SELECT proposition_id FROM votes WHERE utilisateur = ? AND sous_pb_id =?",(user,sous_prob_id))
+        proposition = int(cursor.fetchone()[0])
+
+        cursor.close()
+        connexion.close()
+        print("Connexion SQLite est fermée")
+        return proposition
+
+    except sqlite3.Error as error:
+        print("Erreur lors du vote", error)
+        return
+
+
+
+def Get_Most_Voted_Propostion(sous_prob_id) -> int :
     """cherche toutes les propositions associées aux problèmes, retourne l’id celle qui à le plus de vote"""
     try:
         connexion = sqlite3.connect(database)
@@ -110,7 +132,7 @@ def Etend_Branche(titre,utilisateur_id,sous_pb_parent) -> None :
         print("Erreur lors de l'insertion dans la table sous_pb", error)
 
 
-def Vote(proposition_id, id_prob, utilisateur) -> None :
+def Vote(proposition_id, id_sous_prob, utilisateur) -> None :
     """vérifie contrainte d’intégrité, éligibilité aux votes et change compte de vote"""
     try:
     #removing previous vote
@@ -118,38 +140,30 @@ def Vote(proposition_id, id_prob, utilisateur) -> None :
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
 
-        cursor.execute("SELECT max(id) FROM sous_pb WHERE pb_parent_id =" + str(id_prob))
-        sous_pb_id = cursor.fetchone()[0]
-
         #decrease vote count if user already voted in the same spb
-        sql = " UPDATE propositions SET nb_vote = (nb_vote - 1) WHERE id = \
-            (SELECT proposition_id FROM votes where utilisateur = ? and sous_pb_id = ?)"
-        donnees =[(utilisateur, sous_pb_id)]
-        print(utilisateur, sous_pb_id)
-        cursor.executemany(sql, donnees)
+        cursor.execute(" UPDATE propositions SET nb_vote = (nb_vote - 1) WHERE id = \
+            (SELECT proposition_id FROM votes WHERE utilisateur = ? AND sous_pb_id = ?)",(utilisateur,id_sous_prob))
+
         #remove the vote occurence on the table vote
-        sql = "DELETE FROM votes where utilisateur = ? and sous_pb_id = ?"
-        donnees = [(utilisateur, sous_pb_id)]        
-        cursor.executemany(sql, donnees)
-    #adding new one
-        sql = "INSERT INTO votes (utilisateur, proposition_id, sous_pb_id) VALUES (?,?,?)"
-        donnees=[(utilisateur, proposition_id, sous_pb_id)] #attention, utilisateur est text et non id
-        cursor.executemany(sql, donnees)
+        print("remove occurence ...")
+        cursor.execute("DELETE FROM votes WHERE utilisateur = ? AND sous_pb_id = ?",(utilisateur,id_sous_prob))
 
-        sql = " UPDATE propositions SET nb_vote = (nb_vote + 1) WHERE id = ?"
-        donnees =[(proposition_id,)]
-        cursor.executemany(sql, donnees)
+        #adding new one
+        print("add vote to tables votes ...")
+        cursor.execute("INSERT INTO votes (utilisateur, proposition_id, sous_pb_id) VALUES (?,?,?)",(utilisateur,proposition_id,id_sous_prob))
 
+        print("Update nombre de votes ...")
+        cursor.execute("UPDATE propositions SET nb_vote = (nb_vote + 1) WHERE id = ?", (proposition_id,))
         connexion.commit()
+        
         print("Vote comptabilisé avec succès !")
         cursor.close()
         connexion.close()
         print("Connexion SQLite est fermée")
+        return
     except sqlite3.Error as error:
-        print("Erreur lors de l'insertion dans la table pb", error)
-
-    return None 
-
+        print("Erreur lors du vote :", error)
+        return
 
 def EnvoieMessage(utilisateur,texte,sous_proposition_id) -> None :
     """créé une ligne dans le schéma message, l’associe aux sous problème"""

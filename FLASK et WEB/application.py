@@ -8,6 +8,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 
+
 @app.route('/')
 def main():
     return render_template("accueil.html")
@@ -42,13 +43,19 @@ def problematique(id_prob):
     id_last_sous_prob = spbs[-1][0]
     props = fonctions_pratique.GetPropositions(id_last_sous_prob)
 
+    #Spécifique au vote
     vote_id = request.args.get("id")
 
-    if vote_id != None and session["name"] != None:
-        fonctions_pratique.Vote(vote_id, id_prob, session["name"])
+    if vote_id != None and session["name"]!= None:
+        fonctions_pratique.Vote(vote_id, id_last_sous_prob, session["name"])
         return redirect("/problematique/"+str(id_prob))
 
-    return render_template('problematique.html',id_prob=id_prob,spbs = spbs,props=props,len_spbs=len(spbs))
+    voted_prop = None
+
+    if "name" in session and session["name"]!=None:
+        voted_prop=fonctions_pratique.Get_Solution_Voter_by_User(id_last_sous_prob,session["name"])
+        print("Voted prop = " + str(voted_prop))
+    return render_template('problematique.html',id_prob=id_prob,spbs = spbs,props=props,voted_prop=voted_prop,len_spbs=len(spbs))
 
 @app.route('/problematique/ajout_prop/<int:id_prob>/<int:id_sous_pb>',methods=["GET","POST"])
 def Ajoute_prop(id_prob,id_sous_pb):
