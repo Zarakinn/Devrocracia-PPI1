@@ -20,7 +20,7 @@ def Creation_Problemes(titre,description,spb_titre,utilisateur) -> None :
         new_pb_id=cursor.fetchone()
         new_pb_id=new_pb_id[0]+1
 
-        sql_pb = "INSERT INTO pb (id,DateCreation,titre,texte,utilisateur_id) VALUES (?,?,?,?,?)"
+        sql_pb = "INSERT INTO pb (id,DateCreation,titre,texte,utilisateur_email) VALUES (?,?,?,?,?)"
         donnees_pb=[(new_pb_id,date,titre,description,utilisateur)] #attention, utilisateur est text et non id
         cursor.executemany(sql_pb, donnees_pb)
 
@@ -29,7 +29,7 @@ def Creation_Problemes(titre,description,spb_titre,utilisateur) -> None :
         new_spb_id=cursor.fetchone()
         new_spb_id=new_spb_id[0]+1
 
-        sql_spb = "INSERT INTO sous_pb (id,DateCreation,titre ,auteur_id, sous_pb_parent_id, pb_parent_id) VALUES (?,?,?,?,?,?)"
+        sql_spb = "INSERT INTO sous_pb (id,DateCreation,titre ,auteur_email, sous_pb_parent_id, pb_parent_id) VALUES (?,?,?,?,?,?)"
         donnees_spb=[(new_spb_id,date,spb_titre,utilisateur,new_spb_id,new_pb_id)]
         cursor.executemany(sql_spb, donnees_spb)
 
@@ -66,13 +66,15 @@ def Creation_Proposition(Sous_probleme_id,titre,description) -> None :
 
 def Get_Solution_Voter_by_User(sous_prob_id, user) -> int:
     try:
-    #removing previous vote
+        #removing previous vote
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
 
-        cursor.execute("SELECT proposition_id FROM votes WHERE utilisateur = ? AND sous_pb_id =?",(user,sous_prob_id))
-        proposition = int(cursor.fetchone()[0])
+        cursor.execute("SELECT proposition_id FROM votes WHERE utilisateur_email = ? AND sous_pb_id =?",(user,sous_prob_id))
+        proposition = cursor.fetchone()
+        if proposition != None:
+            proposition = int(proposition[0])
 
         cursor.close()
         connexion.close()
@@ -106,7 +108,7 @@ def Get_Most_Voted_Propostion(sous_prob_id) -> int :
     except sqlite3.Error as error:
         print("Erreur lors de l'insertion dans la table pb", error)
 
-def Etend_Branche(titre,utilisateur_id,sous_pb_parent) -> None :
+def Etend_Branche(titre,utilisateur,sous_pb_parent) -> None :
     """créé un nouveau sous problème en fonction de la proposition choisit, créé les données associé dans la base de données 
     -> le en fonction de sous proposition à besoin d'une fonction pour savoir qui a eu le plus de vote"""
     try:
@@ -120,8 +122,8 @@ def Etend_Branche(titre,utilisateur_id,sous_pb_parent) -> None :
         date=cursor.fetchone()
         date=date[0]
 
-        donnees=[(new_id,date,titre,utilisateur_id,sous_pb_parent)]
-        sql = "INSERT INTO sous_pb (id,DateCreation,titre,auteur_id,sous_pb_parent_id) VALUES (?, ?, ?, ?, ?)"
+        donnees=[(new_id,date,titre,utilisateur,sous_pb_parent)]
+        sql = "INSERT INTO sous_pb (id,DateCreation,titre,auteur_,sous_pb_parent_id) VALUES (?, ?, ?, ?, ?)"
         cursor.executemany(sql, donnees)
         connexion.commit()
         print("Enregistrements insérés avec succès dans la table sous_pb")
@@ -142,15 +144,15 @@ def Vote(proposition_id, id_sous_prob, utilisateur) -> None :
 
         #decrease vote count if user already voted in the same spb
         cursor.execute(" UPDATE propositions SET nb_vote = (nb_vote - 1) WHERE id = \
-            (SELECT proposition_id FROM votes WHERE utilisateur = ? AND sous_pb_id = ?)",(utilisateur,id_sous_prob))
+            (SELECT proposition_id FROM votes WHERE utilisateur_email = ? AND sous_pb_id = ?)",(utilisateur,id_sous_prob))
 
         #remove the vote occurence on the table vote
         print("remove occurence ...")
-        cursor.execute("DELETE FROM votes WHERE utilisateur = ? AND sous_pb_id = ?",(utilisateur,id_sous_prob))
+        cursor.execute("DELETE FROM votes WHERE utilisateur_email = ? AND sous_pb_id = ?",(utilisateur,id_sous_prob))
 
         #adding new one
         print("add vote to tables votes ...")
-        cursor.execute("INSERT INTO votes (utilisateur, proposition_id, sous_pb_id) VALUES (?,?,?)",(utilisateur,proposition_id,id_sous_prob))
+        cursor.execute("INSERT INTO votes (utilisateur_email, proposition_id, sous_pb_id) VALUES (?,?,?)",(utilisateur,proposition_id,id_sous_prob))
 
         print("Update nombre de votes ...")
         cursor.execute("UPDATE propositions SET nb_vote = (nb_vote + 1) WHERE id = ?", (proposition_id,))
@@ -174,7 +176,7 @@ def EnvoieMessage(utilisateur,texte,sous_proposition_id) -> None :
         cursor.execute("SELECT max(id) FROM message ")
         new_id=cursor.fetchone()
         new_id=new_id[0]+1
-        sql = "INSERT INTO message (id,texte,utilisateur_id,sous_pb_id) VALUES (?, ?, ?, ?)"
+        sql = "INSERT INTO message (id,texte,utilisateur,sous_pb_id) VALUES (?, ?, ?, ?)"
         donnes=[(new_id,texte,utilisateur,sous_proposition_id)]
         cursor.executemany(sql,donnes )
         connexion.commit()
@@ -185,6 +187,22 @@ def EnvoieMessage(utilisateur,texte,sous_proposition_id) -> None :
     except sqlite3.Error as error:
         print("Erreur lors de l'insertion dans la table message/sous_pb", error)
 
+
+def GetNames(utilisateur):
+    try:
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+        print("Connexion réussie à SQLite")
+        cursor.execute("SELECT nom,prenom FROM utilisateurs WHERE email = ? ",(utilisateur,))
+        names = cursor.fetchone()
+
+        cursor.close()
+        connexion.close()
+        print("Connexion SQLite est fermée")
+        print("Names = " + str(names))
+        return names
+    except sqlite3.Error as error:
+        print("Erreur lors de la récupération du nom", error)
 
 ## Récupération de données à afficher
 

@@ -13,10 +13,10 @@
         <li><a href="/">Accueil</a></li>
         <li><a href="/problematiques">Problématiques</a></li>
         <li><a href="/help">Aide</a></li>
-        {%if not session.name%}
+        {%if not session.mail%}
         <li><a href="/login" class="logbutton">Login</a></li>
             {% else %}
-        <li><a href="/logout" class="logbutton">Logout of {{session.name}}</a></li>
+        <li><a href="/logout" class="logbutton">Logout of {{session.fname}}</a></li>
         {% endif %}
     </nav>
 </header>

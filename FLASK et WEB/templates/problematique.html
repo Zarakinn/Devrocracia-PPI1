@@ -11,13 +11,13 @@
     {% endfor %}
     <p><br />Voici les propositions associés aux sous-problèmes actuelles :</p>
 
-    {% if session.name %}
+    {% if session.mail %}
         <ul>
         {% for j in props%}
             {% if j[0]==voted_prop %}
                 <li><a class="prob-button-selected" href="/problematique/{{id_prob}}?id={{j[0]}}">Tu as  voté pour :{{j}}</a></li>
             {% else %}
-                <li>{{j[0] == voted_prop}}<a class="prob-button-not-selected" href="/problematique/{{id_prob}}?id={{j[0]}}">{{j}}</a></li>
+                <li><a class="prob-button-not-selected" href="/problematique/{{id_prob}}?id={{j[0]}}">{{j}}</a></li>
             {% endif %}
         {%endfor%}
         </ul>

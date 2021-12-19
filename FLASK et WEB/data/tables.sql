@@ -3,8 +3,9 @@ id integer,
 DateCreation date,
 titre text,  
 texte text,
-utilisateur_id integer references utilisateurs(id),
-CONSTRAINT pb_PK PRIMARY KEY (id));
+utilisateur_email text,
+CONSTRAINT pb_PK PRIMARY KEY (id),
+FOREIGN KEY(utilisateur_email) REFERENCES "utilisateurs"("email"));
 
 CREATE TABLE utilisateurs (
 email text,
@@ -16,28 +17,38 @@ CREATE TABLE sous_pb (
 id integer,
 DateCreation date,
 titre VARCHAR(100),
-auteur_id integer references utilisateurs(id),
-sous_pb_parent_id integer references sous_pb(id),
-pb_parent_id integer references pb(id),
-CONSTRAINT sous_pb_PK PRIMARY KEY (id));
-
-CREATE TABLE msg (
-id integer,
-texte text,
-utilisateur_id integer references utilisateurs(id),
-sous_pb_id integer references sous_pb(id),
-CONSTRAINT msg_PK PRIMARY KEY (id));
+auteur_email text,
+sous_pb_parent_id integer,
+pb_parent_id integer,
+CONSTRAINT sous_pb_PK PRIMARY KEY (id),
+FOREIGN KEY(auteur_email) REFERENCES "utilisateurs"("email"),
+FOREIGN KEY(sous_pb_parent_id) REFERENCES "sous_pb"("id"),
+FOREIGN KEY(pb_parent_id) REFERENCES "pb"("id"));
 
 CREATE TABLE propositions (
 id integer,
-sous_pb_id integer references sous_pb(id),
+sous_pb_id integer,
 titre text,
 texte text,
 nb_vote integer,
-CONSTRAINT propositions_PK PRIMARY KEY (id));
+CONSTRAINT propositions_PK PRIMARY KEY (id),
+FOREIGN KEY(sous_pb_id) REFERENCES "sous_pb"("id"));
 
 CREATE TABLE votes (
-utilisateur text references utilisateurs(mail),
-proposition_id integer references propositions(id),
-sous_pb_id integer references sous_pb_id,
-CONSTRAINT vote_PK PRIMARY KEY (utilisateur, sous_pb_id));
+utilisateur_email text,
+proposition_id integer,
+sous_pb_id integer,
+CONSTRAINT vote_PK PRIMARY KEY (utilisateur_email, sous_pb_id),
+FOREIGN KEY(utilisateur_email) REFERENCES "utilisateurs"("email"),
+FOREIGN KEY(proposition_id) REFERENCES "propositions"("id"),
+FOREIGN KEY(sous_pb_id) REFERENCES "sous_pb"(id));
+
+CREATE TABLE "msg" (
+	"id"	integer,
+	"texte"	text,
+	"utilisateur_email" integer,
+	"sous_pb_id"	integer,
+	CONSTRAINT "msg_PK" PRIMARY KEY("id"),
+	FOREIGN KEY("sous_pb_id") REFERENCES "sous_pb"("id"),
+	FOREIGN KEY(utilisateur_email) REFERENCES "utilisateurs"("email")
+);

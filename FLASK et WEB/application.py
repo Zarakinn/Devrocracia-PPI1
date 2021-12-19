@@ -46,14 +46,14 @@ def problematique(id_prob):
     #Spécifique au vote
     vote_id = request.args.get("id")
 
-    if vote_id != None and session["name"]!= None:
-        fonctions_pratique.Vote(vote_id, id_last_sous_prob, session["name"])
+    if vote_id != None and session["mail"]!= None:
+        fonctions_pratique.Vote(vote_id, id_last_sous_prob, session["mail"])
         return redirect("/problematique/"+str(id_prob))
 
     voted_prop = None
 
-    if "name" in session and session["name"]!=None:
-        voted_prop=fonctions_pratique.Get_Solution_Voter_by_User(id_last_sous_prob,session["name"])
+    if "mail" in session and session["mail"]!=None:
+        voted_prop=fonctions_pratique.Get_Solution_Voter_by_User(id_last_sous_prob,session["mail"])
         print("Voted prop = " + str(voted_prop))
     return render_template('problematique.html',id_prob=id_prob,spbs = spbs,props=props,voted_prop=voted_prop,len_spbs=len(spbs))
 
@@ -70,11 +70,20 @@ def Ajoute_prop(id_prob,id_sous_pb):
 @app.route('/login', methods=["GET","POST"])
 def login():
     if request.method == "POST":
-        session["name"] = request.form.get("name")
+        session["mail"] = request.form.get("mail")
+
+        print("mail entrée = " + session["mail"])
+
+        names = fonctions_pratique.GetNames(session["mail"])
+        if not (names == None) :
+            session["name"],session["fname"]=names 
+
         return redirect("/")
     return render_template('login.html')
 
 @app.route('/logout')
 def logout():
+    session["mail"] = None
     session["name"] = None
+    session["fname"] = None
     return redirect('/')
