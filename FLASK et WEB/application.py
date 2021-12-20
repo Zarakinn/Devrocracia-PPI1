@@ -28,8 +28,8 @@ def problematiques():
         new_pb_desc = request.form.get("new_pb_desc")
         first_spb = request.form.get("first_spb")
         if new_pb_desc is not None and new_pb_title is not None:
-            fonctions_pratique.Creation_Problemes(new_pb_title, new_pb_desc, first_spb, session["name"])
-            print(new_pb_title,new_pb_desc,session["name"])
+            fonctions_pratique.Creation_Problemes(new_pb_title, new_pb_desc, first_spb, session["mail"]) ## Attention, mettre mail pas name
+            print(new_pb_title,new_pb_desc,session["mail"])
             return redirect('/problematiques')
     return render_template('problematiques.html',liste_prob = liste_prob,len = len_, showform=request.args.get("showform"))
 
@@ -65,14 +65,12 @@ def Ajoute_prop(id_prob,id_sous_pb):
     else :
         print("Ajoute d'une proposition")
         fonctions_pratique.Creation_Proposition(id_sous_pb,request.form.get("titre"),request.form.get("texte"))
-        return redirect("/problematique/"+str(id_prob))    # vulnerable si je fait une simple concatenation ???
+        return redirect("/problematique/"+str(id_prob))    
 
 @app.route('/login', methods=["GET","POST"])
 def login():
     if request.method == "POST":
         session["mail"] = request.form.get("mail")
-
-        print("mail entrée = " + session["mail"])
 
         names = fonctions_pratique.GetNames(session["mail"])
         if not (names == None) :

@@ -9,15 +9,20 @@
     {%endfor%}
 
     {% if showform %}
-    <a class="prob-button" href="/problematiques?">+</a>
-    <form class="form_new_pb" method ="POST">
-        <input autocomplete="off" autofocus name="new_pb_title" placeholder="new_pb_title" type="text">
-        <input autocomplete="off" autofocus name="new_pb_desc" placeholder="new_pb_desc" type="text">
-        <input autocomplete="off" autofocus name="first_spb" placeholder="first_spb" type="text">
-        <input type="submit">
-    </form>
+        {% if session.mail %}
+        <a class="prob-button" href="/problematiques?">+</a>
+        <form class="form_new_pb" method ="POST">
+            <input autocomplete="off" autofocus name="new_pb_title" placeholder="new_pb_title" type="text">
+            <input autocomplete="off" autofocus name="new_pb_desc" placeholder="new_pb_desc" type="text">
+            <input autocomplete="off" autofocus name="first_spb" placeholder="first_spb" type="text">
+            <input type="submit">
+        </form>
+        {% else %}
+        <a class="prob-button" href="/problematiques?showform=True">+</a>
+        <p> Tu dois te connecter pour ajouter une Problématiques</p>
+        {% endif %}
     {% else %}
-    <a class="prob-button" href="/problematiques?showform=True">+</a>
+        <a class="prob-button" href="/problematiques?showform=True">+</a>
     {% endif %}
 </body>
 {% endblock %}
