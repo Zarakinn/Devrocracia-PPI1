@@ -7,7 +7,7 @@ h1 {
 div.tablo-question-solution{
 	display: grid;
     grid-template-columns: auto auto;
-	margin: 30px auto 0px auto;
+	margin: 30px 0px 0px auto;
 }
 
 a.question-button{
@@ -35,3 +35,74 @@ a.solution-button{
 	margin: 0px auto 0px 0px;
 	cursor:pointer;
 }
+
+a.question-button-only{
+	background-color: #1ab26b;
+	width:max-content;
+	border:none;
+	color:white;
+    padding: 10px 20px;
+	text-align: center;
+	font-size:64px;
+    border-radius: 20px;
+	margin: 0px 0px 0px auto;
+	cursor:pointer;
+}
+
+div.tablo-choix{
+	display: grid;
+    grid-template-columns: auto auto auto auto;
+	margin: 30px;
+}
+
+.choix{
+	background-color: #FDD017;
+	width:max-content;
+	border:none;
+	color:white;
+    padding: 10px 20px;
+	text-align: center;
+	font-size:56px;
+    border-radius: 20px;
+	margin:20px auto 0px auto;
+	cursor:pointer;
+}
+
+.choisi{
+	background-color: #C68E17;
+	width:max-content;
+	border:none;
+	color:white;
+    padding: 10px 20px;
+	text-align: center;
+	font-size:56px;
+    border-radius: 20px;
+	margin:20px auto 0px auto;
+	cursor:pointer;
+}
+
+.choix-gagnant{
+	background-color: #028A0F;
+	width:max-content;
+	border:none;
+	color:white;
+    padding: 10px 20px;
+	text-align: center;
+	font-size:56px;
+    border-radius: 20px;
+	margin:20px auto 0px auto;
+	cursor:pointer;
+}
+.choix-perdant{
+	background-color: #A91B0D;
+	width:max-content;
+	border:none;
+	color:white;
+    padding: 10px 20px;
+	text-align: center;
+	font-size:56px;
+    border-radius: 20px;
+	margin:20px auto 0px auto;
+	cursor:pointer;
+}
+
