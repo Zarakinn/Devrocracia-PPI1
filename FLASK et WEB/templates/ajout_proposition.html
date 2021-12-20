@@ -1,6 +1,6 @@
 {% extends 'header_layout.html' %}
 {% block header %}
-    <form action="/problematique/ajout_prop/{{id_prob}}/{{id_sous_pb}}" method ="POST">
+    <form action="/problematique/ajout_prop/{{id_prob}}/{{id_question}}" method ="POST">
         <input autocomplete="off" autofocus name="titre" placeholder="Titre" type="text">
         <input autocomplete="off" autofocus name="texte" placeholder="Texte" type="text">
         <input type="submit" value="Proposer">

@@ -6,15 +6,15 @@
     Voici la problématique d'id :{{id_prob}}
 </head>
 <body>
-    {% for i in spbs %}
+    {% for i in questions %}
         <p> {{i}}</p>
     {% endfor %}
-    <p><br />Voici les propositions associés aux sous-problèmes actuelles :</p>
+    <p><br />Voici les propositions associés aux questions actuelles :</p>
 
     {% if session.mail %}
         <ul>
-        {% for j in props%}
-            {% if j[0]==voted_prop %}
+        {% for j in solutions%}
+            {% if j[0]==voted_solution %}
                 <li><a class="prob-button-selected" href="/problematique/{{id_prob}}?id={{j[0]}}">Tu as  voté pour :{{j}}</a></li>
             {% else %}
                 <li><a class="prob-button-not-selected" href="/problematique/{{id_prob}}?id={{j[0]}}">{{j}}</a></li>
@@ -22,15 +22,15 @@
         {%endfor%}
         </ul>
         <p><br />Cliquez ici pour ajouter une proposition:</p>
-        <a href="/problematique/ajout_prop/{{id_prob}}/{{spbs[len_spbs-1][0]}}">Ajout proposition</a>
+        <a href="/problematique/ajout_prop/{{id_prob}}/{{questions[len_questions-1][0]}}">Ajout proposition</a>
         </a>
     {%else %}
     <ul>
-    {% for j in props%}
+    {% for j in solutions%}
         <li><a class="prob-button-not-selected">{{j}}</a></li>
     {%endfor%}
     </ul>
-    <p><br />Connecte-toi pour ajouter des propositions ou voter</p>
+    <p><br />Connecte-toi pour ajouter des solutions ou voter</p>
     {% endif %}
 </body>
 
