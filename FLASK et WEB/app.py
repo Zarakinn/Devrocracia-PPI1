@@ -30,7 +30,7 @@ def problematiques():
         first_question = request.form.get("first_question")
         if new_pb_desc is not None and new_pb_title is not None:
             fonctions_pratique.Creation_Problemes(new_pb_title, new_pb_desc, first_question, session["mail"]) ## Attention, mettre mail pas name
-            print(new_pb_title,new_pb_desc,session["mail"])
+            print(new_pb_title,new_pb_desc, first_question, session["mail"])
             return redirect('/problematiques')
     return render_template('problematiques.html',liste_prob = liste_prob,len = len_, showform=request.args.get("showform"))
 

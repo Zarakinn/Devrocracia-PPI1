@@ -27,7 +27,7 @@ def Creation_Problemes(titre,description,question_titre,utilisateur) -> None :
         cursor.executemany(sql_pb, donnees_pb)
 
 
-        cursor.execute("SELECT max(id) FROM sous_pb ")
+        cursor.execute("SELECT max(id) FROM question ")
         new_question_id=cursor.fetchone()
         new_question_id=new_question_id[0]+1
 
