@@ -340,8 +340,9 @@ def ValidLogin(email : str, password : str) -> bool:
         connexion.close()
         print("Connexion SQLite est fermée")
 
-        if user == []:
+        if user == None or user==[]:
             return False
+        print(user)
         ## Check password ici
 
         return True
