@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from logging import fatal
 from re import U
 import sqlite3
+## from werkzeug.datastructures import V        c'est quoi ca ????????
 
 database = "data/database.db"
 
@@ -271,3 +273,77 @@ def GetSolutions(id_question : int) -> list:
         return liste_solution
     except sqlite3.Error as error:
         print("Erreur lors de la récupération des solutions", error)
+
+
+def ValidEmail(email :str) -> bool:
+    
+    if email == "" or email == None:
+        return False
+
+    
+    email_decomposé = email.split("@")
+    if len(email_decomposé) != 2:
+        return False
+    if email_decomposé[0]=="" or email_decomposé[1]=="":
+        return False
+
+    if not email_decomposé[1].endswith(".com") or email_decomposé[1].endswith(".fr"):
+        return False
+    return True
+
+def NotAlreadyRegister(email : str) -> bool:
+    try:
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+        print("Connexion réussie à SQLite")
+
+        cursor.execute("SELECT * FROM utilisateurs WHERE email=?",(email,))
+        utilisateur = cursor.fetchall()
+        
+        b = utilisateur == []
+
+        print("Vérification réussi ="+str(b))
+        cursor.close()
+        connexion.close()
+        print("Connexion SQLite est fermée")
+        return b
+    except sqlite3.Error as error:
+        print("Erreur lors de la vérification que le nouveau mail n'est pas déjà dans la BD", error)
+
+def Register(email : str, name :str, fname: str):
+    try:
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+        print("Connexion réussie à SQLite")
+
+        cursor.execute("INSERT INTO utilisateurs VALUES (?,?,?)",(email,name,fname,))
+
+        print("Nouvel utilisateurs insérer")
+        connexion.commit()
+        cursor.close()
+        connexion.close()
+        print("Connexion SQLite est fermée")
+        return 
+    except sqlite3.Error as error:
+        print("Erreur lors de l'insertion du nouvel utilisateurs", error)
+
+def ValidLogin(email : str, password : str) -> bool:
+    try:
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+        print("Connexion réussie à SQLite")
+
+        cursor.execute("SELECT * FROM utilisateurs WHERE email=?",(email,))
+        user = cursor.fetchone()
+
+        cursor.close()
+        connexion.close()
+        print("Connexion SQLite est fermée")
+
+        if user == []:
+            return False
+        ## Check password ici
+
+        return True
+    except sqlite3.Error as error:
+        print("Erreur lors de la vérification du login", error)

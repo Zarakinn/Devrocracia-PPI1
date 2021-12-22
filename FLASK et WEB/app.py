@@ -63,7 +63,7 @@ def problematique(id_prob):
 def Ajoute_prop(id_prob,id_question):
 
     if request.method == "GET":
-        return render_template("ajout_proposition.html",id_prob=id_prob,id_question=id_question)
+        return render_template("ajout_prosposition.html",id_prob=id_prob,id_question=id_question)
     else :
         print("Ajoute d'une proposition")
         fonctions_pratique.Creation_Solution(id_question,request.form.get("titre"),request.form.get("texte"))
