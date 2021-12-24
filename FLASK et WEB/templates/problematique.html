@@ -1,19 +1,22 @@
 {% extends 'header_layout.html' %}
-
+{%block css%}<link rel="stylesheet" href="../static/problematique.css">{%endblock%}
 {% block header %}
 
 <head>
     Voici la problématique d'id :{{id_prob}}
 </head>
 <body>
+    <ul>
     {% for i in questions %}
-        <p> {{i}}</p>
+        <li>{{i}}</li>
     {% endfor %}
-    <p><br />Voici les propositions associés aux questions actuelles :</p>
+    <ul />
+    <p><br />{{message_vote}}<br /></p>
+    
 
     {% if session.mail %}
         <ul>
-        {% for j in solutions%}
+        {% for j in solutions %}
             {% if j[0]==voted_solution %}
                 <li><a class="prob-button-selected" href="/problematique/{{id_prob}}?id={{j[0]}}">Tu as  voté pour :{{j}}</a></li>
             {% else %}
@@ -21,6 +24,7 @@
             {% endif %}
         {%endfor%}
         </ul>
+        <a href="/problematique/{{id_prob}}?cloture=True"><br />Cloture des votes (expérimental)</a>
         <p><br />Cliquez ici pour ajouter une proposition:</p>
         <a href="/problematique/ajout_prop/{{id_prob}}/{{questions[len_questions-1][0]}}">Ajout proposition</a>
         </a>

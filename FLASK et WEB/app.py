@@ -51,19 +51,45 @@ def problematique(id_prob):
         fonctions_pratique.Vote(vote_id, id_last_question, session["mail"])
         return redirect("/problematique/"+str(id_prob))
 
+    #Différenciation de la page selon si l'on vote pour la prochaine question ou pour la prochaine solution
+    etat = fonctions_pratique.Get_Voting_For_Solution_or_Question(id_prob)
+    if etat == "vote solution":
+        message_vote = "Votez pour une solution ou proposez-en une nouvelle."
+    if etat == "vote question":
+        message_vote = "Votez pour la prochaine question ou proposez-en une nouvelle."
+    most_voted_solution = fonctions_pratique.Get_Most_Voted_Solution(id_last_question)
+        #Création d'une nouvelle branche à partir de la solution la plus votée
+    if request.args.get("cloture") and most_voted_solution != None:
+        most_voted_solution_texte = most_voted_solution[2]
+        if etat == "vote solution":
+            fonctions_pratique.Etend_Branche("Choix de la question faisant suite à : " + most_voted_solution_texte, None, id_last_question, id_prob)
+            return redirect("/problematique/"+str(id_prob))
+        elif etat == "vote question":
+            #Il n'y a pour l'instant pas de mémoire pour l'id de l'utilisateur qui propose la solution retenue d'ou le None ci-dessous
+            fonctions_pratique.Etend_Branche(most_voted_solution_texte, None, id_last_question, id_prob) 
+            return redirect("/problematique/"+str(id_prob))
+
     #solutions pour lequel l'utilisateur a voté
     voted_solution = None
 
     if "mail" in session and session["mail"]!=None:
         voted_solution=fonctions_pratique.Get_Solution_Voter_by_User(id_last_question,session["mail"])
         print("Voted prop = " + str(voted_solution))
-    return render_template('problematique.html',id_prob=id_prob,questions = questions,solutions=solutions,voted_solution=voted_solution,len_questions=len(questions))
+
+    return render_template(
+        'problematique.html',
+        id_prob=id_prob,
+        questions = questions,
+        solutions=solutions,
+        voted_solution=voted_solution,
+        len_questions=len(questions),
+        message_vote=message_vote)
 
 @app.route('/problematique/ajout_prop/<int:id_prob>/<int:id_question>',methods=["GET","POST"])
 def Ajoute_prop(id_prob,id_question):
 
     if request.method == "GET":
-        return render_template("ajout_prosposition.html",id_prob=id_prob,id_question=id_question)
+        return render_template("ajout_proposition.html",id_prob=id_prob,id_question=id_question)
     else :
         print("Ajoute d'une proposition")
         fonctions_pratique.Creation_Solution(id_question,request.form.get("titre"),request.form.get("texte"))

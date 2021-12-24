@@ -90,7 +90,7 @@ def Get_Solution_Voter_by_User(question_id, user) -> int:
 
 
 def Get_Most_Voted_Solution(question_id) -> int :
-    """cherche toutes les solutions associées à la question, retourne l’id celle qui à le plus de vote"""
+    """cherche toutes les solutions associées à la question, retourne celle qui à le plus de vote"""
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -99,18 +99,41 @@ def Get_Most_Voted_Solution(question_id) -> int :
         nb_vote_max=cursor.fetchone()
         nb_vote_max=nb_vote_max[0]
         print("Le maximum de vote est " + str(nb_vote_max))
-        cursor.execute("SELECT id FROM solutions WHERE question_id=? AND nb_vote=? ", (question_id,nb_vote_max))
-        id_best_solution=cursor.fetchone()
-        id_best_solution=id_best_solution[0]
+        cursor.execute("SELECT * FROM solutions WHERE question_id=? AND nb_vote=? ", (question_id,nb_vote_max))
+        best_solution=cursor.fetchone()
         print("Enregistrements éxécutés avec succès dans la table pb")
         cursor.close()
         connexion.close()
         print("Connexion SQLite est fermée")
-        return id_best_solution
+        return best_solution
     except sqlite3.Error as error:
         print("Erreur lors de l'insertion dans la table pb", error)
 
-def Etend_Branche(titre,utilisateur,question_parent) -> None :
+
+
+def Get_Voting_For_Solution_or_Question(pb_parent_id) -> int :
+    """Si le nombre de question d'un problème est impair on vote pour une solution, sinon pour une question."""
+    try:
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+        print("Connexion réussie à SQLite")
+
+        cursor.execute("SELECT count(id) FROM question WHERE pb_parent_id = ?",(pb_parent_id,))
+        parité = cursor.fetchone()[0] % 2
+
+        print("Récupération de l'état vote pour question ou solution réussi")
+        cursor.close()
+        connexion.close()
+        print("Connexion SQLite est fermée")
+        if parité == 1:
+            return "vote solution"
+        else:
+            return "vote question"
+    except sqlite3.Error as error:
+        print("Erreur de la récupération de l'état du vote", error)
+
+
+def Etend_Branche(titre,utilisateur,question_parent, pb_parent_id) -> None :
     """créé une nouvelle question en fonction de la solution choisit, créé les données associé dans la base de données 
     -> le en fonction de la solution à besoin d'une fonction pour savoir qui a eu le plus de vote"""
     try:
@@ -119,14 +142,15 @@ def Etend_Branche(titre,utilisateur,question_parent) -> None :
         print("Connexion réussie à SQLite")
 
         cursor.execute("SELECT max(id) FROM question")
-        new_id=cursor.fetchone()
+        new_id=cursor.fetchone()[0]+1
 
-        date=cursor.fetchone()
-        date=date[0]
+        cursor.execute("SELECT date('now')")
+        date=cursor.fetchone()[0]
 
-        donnees=[(new_id,date,titre,utilisateur,question_parent)]
-        sql = "INSERT INTO question (id,DateCreation,titre,auteur,question_parent_id) VALUES (?, ?, ?, ?, ?)"
+        donnees=[(new_id,date,titre,utilisateur,question_parent, pb_parent_id)]
+        sql = "INSERT INTO question (id,DateCreation,titre,auteur_email,question_parent_id, pb_parent_id) VALUES (?, ?, ?, ?, ?, ?)"
         cursor.executemany(sql, donnees)
+        
         connexion.commit()
         print("Enregistrements insérés avec succès dans la table question")
         cursor.close()
@@ -273,7 +297,6 @@ def GetSolutions(id_question : int) -> list:
         return liste_solution
     except sqlite3.Error as error:
         print("Erreur lors de la récupération des solutions", error)
-
 
 def ValidEmail(email :str) -> bool:
     
