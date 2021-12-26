@@ -111,7 +111,7 @@ def Get_Most_Voted_Solution(question_id) -> int :
     except sqlite3.Error as error:
         print("Erreur lors de la récupération de la solution la plus voté", error)
 
-def Get_Choosen_Solutions(questions : list) -> list:
+def Get_Choosen_Solution(questions : list) -> list:
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -133,6 +133,26 @@ def Get_Choosen_Solutions(questions : list) -> list:
         return choosen_solutions[:-1]
     except sqlite3.Error as error:
         print("Erreur lors de la récupération des solutions choisi", error)
+
+def Get_All_Solutions(questions : list) -> list:
+    try:
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+        #print("Connexion réussie à SQLite")
+        every_solutions = []
+
+        for q in questions:
+            
+            cursor.execute("SELECT * FROM solutions WHERE question_id=? ", (q[0],))
+            solution_to_q=cursor.fetchall()
+            every_solutions.append(solution_to_q)
+    
+        cursor.close()
+        connexion.close()
+        #print("Connexion SQLite est fermée")
+        return every_solutions[:-1]
+    except sqlite3.Error as error:
+        print("Erreur lors de la récupération de toutes les solutions", error)
 
 
 
@@ -447,7 +467,7 @@ def cryptageXOR(plain_text : str) -> str:
 def decryptageXOR(encrypted_text : str) -> str: 
     if encrypted_text=="" or encrypted_text == None:
         return ""
-        
+
     text_unicode = ""
     for i in range(0, len(encrypted_text), 2):     
         text_unicode += bytes.fromhex(encrypted_text[i:i+2]).decode('utf-8')

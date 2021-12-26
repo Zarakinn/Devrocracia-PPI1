@@ -44,8 +44,6 @@ def problematique(id_prob):
     if questions == None or questions == []:
         raise "il n'y pas de question associé, mauvaise initialisation"
 
-    choosen_solution = fonctions_pratique.Get_Choosen_Solutions(questions)
-
     last_question = questions[-1]
     possible_solutions = fonctions_pratique.GetSolutions(last_question[0])
 
@@ -84,13 +82,16 @@ def problematique(id_prob):
         print("Voted prop = " + str(voted_solution))
 
     messages = fonctions_pratique.Get_Messages(last_question[0])
-
+    choosen_solution = fonctions_pratique.Get_Choosen_Solution(questions)
+    every_solutions = fonctions_pratique.Get_All_Solutions(questions)
+    
     return render_template(
         'problematique.html',
         prob=prob,
         last_question=last_question,
         questions = questions,
         choosen_solution=choosen_solution,
+        every_solutions=every_solutions,
         len_question=len(questions),
         possible_solutions=possible_solutions,
         voted_solution=voted_solution,
