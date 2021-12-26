@@ -456,7 +456,7 @@ key = "038UTRENDGKFGS43I48302RZIPÖGJDLFM?"
 def cryptageXOR(plain_text : str) -> str:
     encrypted_text= ""
     key_itr = 0
-    for i in range(len()):
+    for i in range(len(plain_text)):
         lettre_encrpt = ord(plain_text[i]) ^ ord(key[key_itr])
         encrypted_text += hex(lettre_encrpt)[2:].zfill(2) # enlève 0x et ajoute des zeros devant si nécessaire pour avoir deux chiffre hexa <-> 1 nombre
         key_itr +=1
