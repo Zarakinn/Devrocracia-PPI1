@@ -2,6 +2,7 @@
 from logging import fatal
 from re import U
 import sqlite3
+from typing import List
 ## from werkzeug.datastructures import V        c'est quoi ca ????????
 
 database = "data/database.db"
@@ -193,7 +194,7 @@ def Vote(solution_id, id_question, utilisateur) -> None :
         print("Erreur lors du vote :", error)
         return
 
-def EnvoieMessage(utilisateur,texte,question_id) -> None :
+def EnvoieMessage(utilisateur : str,texte : str,question_id : int) -> None :
     """créé une ligne dans le schéma message, l’associe à la question"""
     try:
         connexion = sqlite3.connect(database)
@@ -371,3 +372,20 @@ def ValidLogin(email : str, password : str) -> bool:
         return True
     except sqlite3.Error as error:
         print("Erreur lors de la vérification du login", error)
+
+def Get_Messages(id_question : int ) -> List:
+    try:
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+        print("Connexion réussie à SQLite")
+
+        cursor.execute("SELECT * FROM msg WHERE question_id=?",(id_question,))
+        messages = cursor.fetchall()
+
+        cursor.close()
+        connexion.close()
+        print("Connexion SQLite est fermée")
+
+        return messages
+    except sqlite3.Error as error:
+        print("Erreur lors de la récupération des messages", error)

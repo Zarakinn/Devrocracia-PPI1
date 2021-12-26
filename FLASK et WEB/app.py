@@ -38,52 +38,63 @@ def problematiques():
 @app.route('/problematique/<int:id_prob>')
 def problematique(id_prob):
 
+    prob = fonctions_pratique.GetProblematique(id_prob)
+
     questions = fonctions_pratique.GetQuestions(id_prob)
     if questions == None or questions == []:
         raise "il n'y pas de question associé, mauvaise initialisation"
-    id_last_question = questions[-1][0]
-    solutions = fonctions_pratique.GetSolutions(id_last_question)
+    last_question = questions[-1]
+    solutions = fonctions_pratique.GetSolutions(last_question[0])
 
     #Spécifique au vote
     vote_id = request.args.get("id")
 
     if vote_id != None and session["mail"]!= None:
-        fonctions_pratique.Vote(vote_id, id_last_question, session["mail"])
+        fonctions_pratique.Vote(vote_id, last_question[0], session["mail"])
         return redirect("/problematique/"+str(id_prob))
 
     #Différenciation de la page selon si l'on vote pour la prochaine question ou pour la prochaine solution
     etat = fonctions_pratique.Get_Voting_For_Solution_or_Question(id_prob)
     if etat == "vote solution":
         message_vote = "Votez pour une solution ou proposez-en une nouvelle."
-    if etat == "vote question":
+    elif etat == "vote question":
         message_vote = "Votez pour la prochaine question ou proposez-en une nouvelle."
-    most_voted_solution = fonctions_pratique.Get_Most_Voted_Solution(id_last_question)
+    most_voted_solution = fonctions_pratique.Get_Most_Voted_Solution(last_question[0])
         #Création d'une nouvelle branche à partir de la solution la plus votée
     if request.args.get("cloture") and most_voted_solution != None:
         most_voted_solution_texte = most_voted_solution[2]
         if etat == "vote solution":
-            fonctions_pratique.Etend_Branche("Choix de la question faisant suite à : " + most_voted_solution_texte, None, id_last_question, id_prob)
+            fonctions_pratique.Etend_Branche("Choix de la question faisant suite à : " + most_voted_solution_texte, None, last_question[0], id_prob)
             return redirect("/problematique/"+str(id_prob))
         elif etat == "vote question":
             #Il n'y a pour l'instant pas de mémoire pour l'id de l'utilisateur qui propose la solution retenue d'ou le None ci-dessous
-            fonctions_pratique.Etend_Branche(most_voted_solution_texte, None, id_last_question, id_prob) 
+            fonctions_pratique.Etend_Branche(most_voted_solution_texte, None,last_question[0], id_prob) 
             return redirect("/problematique/"+str(id_prob))
 
     #solutions pour lequel l'utilisateur a voté
     voted_solution = None
 
     if "mail" in session and session["mail"]!=None:
-        voted_solution=fonctions_pratique.Get_Solution_Voter_by_User(id_last_question,session["mail"])
+        voted_solution=fonctions_pratique.Get_Solution_Voter_by_User(last_question[0],session["mail"])
         print("Voted prop = " + str(voted_solution))
+
+    messages = fonctions_pratique.Get_Messages(last_question[0])
 
     return render_template(
         'problematique.html',
+        prob=prob,
+        last_question=last_question,
         id_prob=id_prob,
         questions = questions,
         solutions=solutions,
         voted_solution=voted_solution,
         len_questions=len(questions),
-        message_vote=message_vote)
+        message_vote=message_vote,
+        messages=messages
+        )
+
+
+
 
 @app.route('/problematique/ajout_prop/<int:id_prob>/<int:id_question>',methods=["GET","POST"])
 def Ajoute_prop(id_prob,id_question):
