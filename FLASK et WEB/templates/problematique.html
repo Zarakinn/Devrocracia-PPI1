@@ -38,11 +38,38 @@
         <a class="choix">{{j[2]}}</a>
     {%endfor%}
     </div>
+
     <h2>Connecte-toi pour ajouter des solutions ou voter</h2>
     {% endif %}
 
     {% for m in messages %}
         <p>{{m}}</p>
     {% endfor %}
+
+
+    <script>  <!-- cest le javascript bg -->
+        function show_hide(button_id,other_button_id)
+        {
+            var Btn = document.getElementById("-"+button_id);
+            var OtherBtn = document.getElementById("-"+other_button_id);
+            if(Btn.style.display === "grid")
+                {
+                    Btn.style.display = "none";
+                }
+            else
+                {
+                    if(OtherBtn.style.display === "grid")
+                    {
+                        OtherBtn.style.display = "none";
+                        Btn.style.display = "grid";
+                    }
+                    else
+                    {
+                        Btn.style.display = "grid";
+                    }
+                    
+                }
+        }
+        </script>
 
 {% endblock %}
