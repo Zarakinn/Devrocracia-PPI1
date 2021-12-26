@@ -140,7 +140,7 @@ def inscription():
         return render_template('login.html',error_msg="Données invalides")
 
     if fonctions_pratique.NotAlreadyRegister(email):
-        fonctions_pratique.Register(email,name,fname)
+        fonctions_pratique.Register(email,name,fname,password)
         session["mail"] = email
         session["name"] = name
         session["fname"] = fname
