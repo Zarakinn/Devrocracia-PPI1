@@ -1,41 +1,38 @@
 {% extends 'header_layout.html' %}
-{%block css%}<link rel="stylesheet" href="../static/problematique.css">{%endblock%}
+{%block css%}<link rel="stylesheet" href="../static/QuestionSolution.css">{%endblock%}
+
 {% block header %}
 
-<head>
-    Voici la problématique d'id :{{id_prob}}
-</head>
-<body>
-    <ul>
+    <h1>{{id_prob}}</h1>
     {% for i in questions %}
-        <li>{{i}}</li>
+    <div class="tablo-question-solution">
+        <a class="question-button" href="">{{i[2]}}</a>
+        <a class="solution-button" href="">Solution</a>
+    </div>
     {% endfor %}
-    <ul />
-    <p><br />{{message_vote}}<br /></p>
-    
+
+    <h2>{{message_vote}}</h2>
 
     {% if session.mail %}
-        <ul>
+    <div class="tablo-choix">
         {% for j in solutions %}
             {% if j[0]==voted_solution %}
-                <li><a class="prob-button-selected" href="/problematique/{{id_prob}}?id={{j[0]}}">Tu as  voté pour :{{j}}</a></li>
+                <li><a class="choisi" href="/problematique/{{id_prob}}?id={{j[0]}}">Tu as  voté pour :{{j}}</a></li>
             {% else %}
-                <li><a class="prob-button-not-selected" href="/problematique/{{id_prob}}?id={{j[0]}}">{{j}}</a></li>
+                <a class="choix" href="/problematique/{{id_prob}}?id={{j[0]}}">{{j[2]}}</a>
             {% endif %}
         {%endfor%}
-        </ul>
+        <a class="choix" href="/problematique/ajout_prop/{{id_prob}}/{{questions[len_questions-1][0]}}">+</a>
+    </div>
         <a href="/problematique/{{id_prob}}?cloture=True"><br />Cloture des votes (expérimental)</a>
-        <p><br />Cliquez ici pour ajouter une proposition:</p>
-        <a href="/problematique/ajout_prop/{{id_prob}}/{{questions[len_questions-1][0]}}">Ajout proposition</a>
-        </a>
+
     {%else %}
-    <ul>
+    <div class="tablo-choix">
     {% for j in solutions%}
-        <li><a class="prob-button-not-selected">{{j}}</a></li>
+        <a class="choix">{{j[2]}}</a>
     {%endfor%}
-    </ul>
-    <p><br />Connecte-toi pour ajouter des solutions ou voter</p>
+    </div>
+    <h2>Connecte-toi pour ajouter des solutions ou voter</h2>
     {% endif %}
-</body>
 
 {% endblock %}

@@ -4,6 +4,12 @@ h1 {
     text-align: center;
 }
 
+h2{
+    font-family: Verdana;
+    color: #000000;
+    text-align: center;
+}
+
 div.tablo-question-solution{
 	display: grid;
     grid-template-columns: auto auto;
