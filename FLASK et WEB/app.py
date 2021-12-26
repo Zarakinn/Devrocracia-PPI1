@@ -44,8 +44,6 @@ def problematique(id_prob):
     if questions == None or questions == []:
         raise "il n'y pas de question associé, mauvaise initialisation"
 
-    choosen_solution = fonctions_pratique.Get_Choosen_Solutions(questions)
-
     last_question = questions[-1]
     possible_solutions = fonctions_pratique.GetSolutions(last_question[0])
 
@@ -69,7 +67,7 @@ def problematique(id_prob):
     if request.args.get("cloture") and most_voted_solution != None:        
         most_voted_solution_texte = most_voted_solution[2]
         if etat == "vote solution":
-            fonctions_pratique.Etend_Branche("Choix de la question faisant suite à : " + most_voted_solution_texte, None, last_question[0], id_prob)
+            fonctions_pratique.Etend_Branche("Question suivante", None, last_question[0], id_prob)
             return redirect("/problematique/"+str(id_prob))
         elif etat == "vote question":
             #Il n'y a pour l'instant pas de mémoire pour l'id de l'utilisateur qui propose la solution retenue d'ou le None ci-dessous
@@ -84,13 +82,16 @@ def problematique(id_prob):
         print("Voted prop = " + str(voted_solution))
 
     messages = fonctions_pratique.Get_Messages(last_question[0])
-
+    choosen_solution = fonctions_pratique.Get_Choosen_Solution(questions)
+    every_solutions = fonctions_pratique.Get_All_Solutions(questions)
+    
     return render_template(
         'problematique.html',
         prob=prob,
         last_question=last_question,
         questions = questions,
         choosen_solution=choosen_solution,
+        every_solutions=every_solutions,
         len_question=len(questions),
         possible_solutions=possible_solutions,
         voted_solution=voted_solution,
@@ -133,9 +134,9 @@ def inscription():
     if request.method != "POST":
         return render_template('login.html',error_msg="tente de s'inscrire avec un get")
 
-    email,name,fname = request.form.get("mail"),request.form.get("name"),request.form.get("fname")
+    email,name,fname,password = request.form.get("mail"),request.form.get("name"),request.form.get("fname"),request.form.get("password")
 
-    if not fonctions_pratique.ValidEmail(email) or name =="" or name==None or fname=="" or fname=="":
+    if not fonctions_pratique.ValidEmail(email) or name =="" or name==None or fname=="" or fname=="" or password=="":
         return render_template('login.html',error_msg="Données invalides")
 
     if fonctions_pratique.NotAlreadyRegister(email):

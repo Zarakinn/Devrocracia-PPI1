@@ -11,6 +11,7 @@ CREATE TABLE utilisateurs (
 email text,
 nom VARCHAR (15),
 prenom VARCHAR (15),  
+mdp text,
 CONSTRAINT utilisateurs_PK PRIMARY KEY (email));
 
 CREATE TABLE question (
@@ -20,6 +21,7 @@ titre VARCHAR(100),
 auteur_email text,
 question_parent_id integer,
 pb_parent_id integer,
+branche_morte integer DEFAULT 0,
 CONSTRAINT sous_pb_PK PRIMARY KEY (id),
 FOREIGN KEY(auteur_email) REFERENCES "utilisateurs"("email"),
 FOREIGN KEY(question_parent_id) REFERENCES "question"("id"),
