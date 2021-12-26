@@ -43,8 +43,11 @@ def problematique(id_prob):
     questions = fonctions_pratique.GetQuestions(id_prob)
     if questions == None or questions == []:
         raise "il n'y pas de question associé, mauvaise initialisation"
+
+    choosen_solution = fonctions_pratique.Get_Choosen_Solutions(questions)
+
     last_question = questions[-1]
-    solutions = fonctions_pratique.GetSolutions(last_question[0])
+    possible_solutions = fonctions_pratique.GetSolutions(last_question[0])
 
     #Spécifique au vote
     vote_id = request.args.get("id")
@@ -59,9 +62,11 @@ def problematique(id_prob):
         message_vote = "Votez pour une solution ou proposez-en une nouvelle."
     elif etat == "vote question":
         message_vote = "Votez pour la prochaine question ou proposez-en une nouvelle."
+
+
     most_voted_solution = fonctions_pratique.Get_Most_Voted_Solution(last_question[0])
-        #Création d'une nouvelle branche à partir de la solution la plus votée
-    if request.args.get("cloture") and most_voted_solution != None:
+    #Création d'une nouvelle branche à partir de la solution la plus votée
+    if request.args.get("cloture") and most_voted_solution != None:        
         most_voted_solution_texte = most_voted_solution[2]
         if etat == "vote solution":
             fonctions_pratique.Etend_Branche("Choix de la question faisant suite à : " + most_voted_solution_texte, None, last_question[0], id_prob)
@@ -84,11 +89,11 @@ def problematique(id_prob):
         'problematique.html',
         prob=prob,
         last_question=last_question,
-        id_prob=id_prob,
         questions = questions,
-        solutions=solutions,
+        choosen_solution=choosen_solution,
+        len_question=len(questions),
+        possible_solutions=possible_solutions,
         voted_solution=voted_solution,
-        len_questions=len(questions),
         message_vote=message_vote,
         messages=messages
         )

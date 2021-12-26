@@ -3,36 +3,46 @@
 
 {% block header %}
 
-    <h1>{{id_prob}}</h1>
-    {% for i in questions %}
+    <h1>{{prob[2]}}</h1>
+    {% for i in range(0,len_question-1) %}
     <div class="tablo-question-solution">
-        <a class="question-button" href="">{{i[2]}}</a>
-        <a class="solution-button" href="">Solution</a>
+        <a class="question-button" href="">{{questions[i][2]}}</a>
+        <a class="solution-button" href="">{{choosen_solution[i][2]}}</a>
     </div>
     {% endfor %}
 
+
     <h2>{{message_vote}}</h2>
+
+    <div class="tablo-question-solution">
+        <a class="question-button" href="">{{last_question[2]}}</a>
+        <a class="solution-button" href="">Choisisez !</a>
+    </div>
 
     {% if session.mail %}
     <div class="tablo-choix">
-        {% for j in solutions %}
+        {% for j in possible_solutions %}
             {% if j[0]==voted_solution %}
-                <li><a class="choisi" href="/problematique/{{id_prob}}?id={{j[0]}}">Tu as  voté pour :{{j}}</a></li>
+                <li><a class="choisi" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}</a></li>
             {% else %}
-                <a class="choix" href="/problematique/{{id_prob}}?id={{j[0]}}">{{j[2]}}</a>
+                <a class="choix" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}</a>
             {% endif %}
         {%endfor%}
-        <a class="choix" href="/problematique/ajout_prop/{{id_prob}}/{{questions[len_questions-1][0]}}">+</a>
+        <a class="choix" href="/problematique/ajout_prop/{{prob[0]}}/{{last_question[0]}}">+</a>
     </div>
-        <a href="/problematique/{{id_prob}}?cloture=True"><br />Cloture des votes (expérimental)</a>
+        <a href="/problematique/{{prob[0]}}?cloture=True"><br />Cloture des votes (expérimental)</a>
 
     {%else %}
     <div class="tablo-choix">
-    {% for j in solutions%}
+    {% for j in possible_solutions%}
         <a class="choix">{{j[2]}}</a>
     {%endfor%}
     </div>
     <h2>Connecte-toi pour ajouter des solutions ou voter</h2>
     {% endif %}
+
+    {% for m in messages %}
+        <p>{{m}}</p>
+    {% endfor %}
 
 {% endblock %}

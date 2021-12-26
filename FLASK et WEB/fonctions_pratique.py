@@ -74,11 +74,12 @@ def Get_Solution_Voter_by_User(question_id, user) -> int:
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
 
-        cursor.execute("SELECT question_id FROM votes WHERE utilisateur_email = ? AND question_id =?",(user,question_id))
+        cursor.execute("SELECT solution_id FROM votes WHERE utilisateur_email = ? AND question_id =?",(user,question_id))
         solution = cursor.fetchone()
         if solution != None:
+            print("Len =" + str(len(solution)))
             solution = int(solution[0])
-
+            
         cursor.close()
         connexion.close()
         print("Connexion SQLite est fermée")
@@ -95,20 +96,43 @@ def Get_Most_Voted_Solution(question_id) -> int :
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
-        print("Connexion réussie à SQLite")
+        #print("Connexion réussie à SQLite")
         cursor.execute("SELECT max(nb_vote) FROM solutions WHERE question_id=? ",(question_id,))
         nb_vote_max=cursor.fetchone()
         nb_vote_max=nb_vote_max[0]
-        print("Le maximum de vote est " + str(nb_vote_max))
+        #print("Le maximum de vote est " + str(nb_vote_max))
         cursor.execute("SELECT * FROM solutions WHERE question_id=? AND nb_vote=? ", (question_id,nb_vote_max))
         best_solution=cursor.fetchone()
-        print("Enregistrements éxécutés avec succès dans la table pb")
+
         cursor.close()
         connexion.close()
-        print("Connexion SQLite est fermée")
+        #print("Connexion SQLite est fermée")
         return best_solution
     except sqlite3.Error as error:
-        print("Erreur lors de l'insertion dans la table pb", error)
+        print("Erreur lors de la récupération de la solution la plus voté", error)
+
+def Get_Choosen_Solutions(questions : list) -> list:
+    try:
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+        #print("Connexion réussie à SQLite")
+        choosen_solutions = []
+
+        for q in questions:
+            cursor.execute("SELECT max(nb_vote) FROM solutions WHERE question_id=? ",(q[0],))
+            nb_vote_max=cursor.fetchone()
+            nb_vote_max=nb_vote_max[0]
+            #print("Le maximum de vote est " + str(nb_vote_max))
+            cursor.execute("SELECT * FROM solutions WHERE question_id=? AND nb_vote=? ", (q[0],nb_vote_max))
+            best_solution=cursor.fetchone()
+            choosen_solutions.append(best_solution)
+    
+        cursor.close()
+        connexion.close()
+        #print("Connexion SQLite est fermée")
+        return choosen_solutions[:-1]
+    except sqlite3.Error as error:
+        print("Erreur lors de la récupération des solutions choisi", error)
 
 
 
@@ -214,7 +238,6 @@ def EnvoieMessage(utilisateur : str,texte : str,question_id : int) -> None :
     except sqlite3.Error as error:
         print("Erreur lors de l'insertion dans la table message/question", error)
 
-
 def GetNames(utilisateur):
     try:
         connexion = sqlite3.connect(database)
@@ -250,6 +273,20 @@ def GetProblematiques() -> list:
         print("Erreur lors de la récupération des problématiques", error)
 
 
+def GetProblematique(id_prob : int) -> list:
+    try:
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+        print("Connexion réussie à SQLite")
+        cursor.execute("SELECT * FROM pb WHERE id=?",(id_prob,))
+        pb = cursor.fetchone()
+        print("Récupération des problématiques réussi")
+        cursor.close()
+        connexion.close()
+        print("Connexion SQLite est fermée")
+        return pb
+    except sqlite3.Error as error:
+        print("Erreur lors de la récupération d'une problématique", error)
 
 def GetQuestions(id_prob : int) -> list:
     try:
