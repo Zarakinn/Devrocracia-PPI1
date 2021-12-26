@@ -12,12 +12,12 @@
     {% endfor %}
 
 
-    <h2>{{message_vote}}</h2>
+    
 
     <div class="tablo-question-solution">
-        <a class="question-button" href="">{{last_question[2]}}</a>
-        <a class="solution-button" href="">Choisisez !</a>
+        <a class="question-button-only" href="">{{last_question[2]}}</a>
     </div>
+    <h2>{{message_vote}}</h2>
 
     {% if session.mail %}
     <div class="tablo-choix">
