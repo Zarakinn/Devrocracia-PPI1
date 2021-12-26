@@ -182,7 +182,7 @@ def Etend_Branche(titre,utilisateur,question_parent, pb_parent_id) -> None :
         connexion.close()
         print("Connexion SQLite est fermée")
     except sqlite3.Error as error:
-        print("Erreur lors de l'insertion dans la table question", error)
+        print("Erreur lorsque la branche a été étendu", error)
 
 
 def Vote(solution_id, id_question, utilisateur) -> None :
@@ -371,13 +371,13 @@ def NotAlreadyRegister(email : str) -> bool:
     except sqlite3.Error as error:
         print("Erreur lors de la vérification que le nouveau mail n'est pas déjà dans la BD", error)
 
-def Register(email : str, name :str, fname: str):
+def Register(email : str, name :str, fname: str, password : str):
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
 
-        cursor.execute("INSERT INTO utilisateurs VALUES (?,?,?)",(email,name,fname,))
+        cursor.execute("INSERT INTO utilisateurs VALUES (?,?,?)",(email,name,fname,cryptageXOR(password)))
 
         print("Nouvel utilisateurs insérer")
         connexion.commit()
@@ -406,7 +406,10 @@ def ValidLogin(email : str, password : str) -> bool:
         print(user)
         ## Check password ici
 
-        return True
+        if decryptageXOR(user[3])==password:
+            return True
+
+        return False
     except sqlite3.Error as error:
         print("Erreur lors de la vérification du login", error)
 
@@ -426,3 +429,34 @@ def Get_Messages(id_question : int ) -> List:
         return messages
     except sqlite3.Error as error:
         print("Erreur lors de la récupération des messages", error)
+
+
+key = "038UTRENDGKFGS43I48302RZIPÖGJDLFM?"
+
+def cryptageXOR(plain_text : str) -> str:
+    encrypted_text= ""
+    key_itr = 0
+    for i in range(len()):
+        lettre_encrpt = ord(plain_text[i]) ^ ord(key[key_itr])
+        encrypted_text += hex(lettre_encrpt)[2:].zfill(2) # enlève 0x et ajoute des zeros devant si nécessaire pour avoir deux chiffre hexa <-> 1 nombre
+        key_itr +=1
+        if key_itr>=len(key):
+            key_itr=0
+    return encrypted_text
+
+def decryptageXOR(encrypted_text : str) -> str: 
+    if encrypted_text=="" or encrypted_text == None:
+        return ""
+        
+    text_unicode = ""
+    for i in range(0, len(encrypted_text), 2):     
+        text_unicode += bytes.fromhex(encrypted_text[i:i+2]).decode('utf-8')
+    plain_text =""
+    clef_itr = 0 
+    for i in range(len(text_unicode)):   
+        lettre_dcrpt = ord(text_unicode[i]) ^ ord(key[clef_itr])    
+        plain_text += chr(lettre_dcrpt)
+        clef_itr += 1      
+        if clef_itr >= len(key):         
+            clef_itr = 0
+    return plain_text

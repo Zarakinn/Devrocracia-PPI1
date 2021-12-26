@@ -5,7 +5,7 @@
     <a>Si vous avez déjà un compte, connectez vous</a>
     <form action="/login" method ="POST">
         <input autocomplete="off" autofocus name="mail" placeholder="email" type="text">
-        <input autocomplete="off" autofocus name="password" placeholder="password" type="text">
+        <input type="password" name="password" placeholder="password" type="text">
         <input type="submit" value="Login">
     </form>
 </p>
@@ -15,7 +15,7 @@
         <input autocomplete="off" autofocus name="mail" placeholder="email" type="text">
         <input autocomplete="off" autofocus name="name" placeholder="Nom" type="text">
         <input autocomplete="off" autofocus name="fname" placeholder="Prenom" type="text">
-        <input autocomplete="off" autofocus name="password" placeholder="password" type="text">
+        <input type="password" name="password" placeholder="password" type="text">
         <input type="submit" value="Inscription">
     </form>
     {% if error_msg %}
