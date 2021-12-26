@@ -23,7 +23,7 @@
     <div class="tablo-choix">
         {% for j in possible_solutions %}
             {% if j[0]==voted_solution %}
-                <li><a class="choisi" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}</a></li>
+                <a class="choisi" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}</a>
             {% else %}
                 <a class="choix" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}</a>
             {% endif %}
