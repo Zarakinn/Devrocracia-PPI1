@@ -77,7 +77,6 @@ def Get_Solution_Voter_by_User(question_id, user) -> int:
         cursor.execute("SELECT solution_id FROM votes WHERE utilisateur_email = ? AND question_id =?",(user,question_id))
         solution = cursor.fetchone()
         if solution != None:
-            print("Len =" + str(len(solution)))
             solution = int(solution[0])
             
         cursor.close()
@@ -319,6 +318,7 @@ def EnvoieMessage(utilisateur : str,texte : str,question_id : int) -> None :
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
+        print("Insertion de message ...")
         cursor.execute("SELECT max(id) FROM msg ")
         new_id=cursor.fetchone()
         new_id=new_id[0]+1
@@ -514,8 +514,12 @@ def Get_Messages(id_question : int ) -> List:
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
 
+        print("L'id de la question est " + str(id_question))
+
         cursor.execute("SELECT * FROM msg WHERE question_id=?",(id_question,))
         messages = cursor.fetchall()
+
+        print("Il y a "+str(len(messages))+" messages.")
 
         cursor.close()
         connexion.close()

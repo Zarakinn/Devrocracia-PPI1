@@ -38,16 +38,18 @@ def problematiques():
 @app.route('/problematique/<int:id_prob>',methods=["GET","POST"])
 def problematique(id_prob):
 
-    if request.method == "POST":
-        texte = request.form.get("message")
-        fonctions_pratique.EnvoieMessage(session["mail"],texte,id_prob)
-        return redirect("/problematique/"+str(id_prob))
-
     prob = fonctions_pratique.GetProblematique(id_prob)
     questions = fonctions_pratique.GetQuestions(id_prob)
     if questions == None or questions == []:
         raise "il n'y pas de question associé, mauvaise initialisation"
     last_question = questions[-1]
+
+    if request.method == "POST":
+        texte = request.form.get("message")
+        print("envoie le msg :" + texte)
+        fonctions_pratique.EnvoieMessage(session["mail"],texte,last_question[0])
+        return redirect("/problematique/"+str(id_prob))
+
     possible_solutions = fonctions_pratique.GetSolutions(last_question[0])
     messages = fonctions_pratique.Get_Messages(last_question[0])
     choosen_solution = fonctions_pratique.Get_Choosen_Solution(questions)
