@@ -317,10 +317,10 @@ def EnvoieMessage(utilisateur : str,texte : str,question_id : int) -> None :
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
-        cursor.execute("SELECT max(id) FROM message ")
+        cursor.execute("SELECT max(id) FROM msg ")
         new_id=cursor.fetchone()
         new_id=new_id[0]+1
-        sql = "INSERT INTO message (id,texte,utilisateur,question_id) VALUES (?, ?, ?, ?)"
+        sql = "INSERT INTO msg (id,texte,utilisateur_email,question_id) VALUES (?, ?, ?, ?)"
         donnes=[(new_id,texte,utilisateur,question_id)]
         cursor.executemany(sql,donnes )
         connexion.commit()

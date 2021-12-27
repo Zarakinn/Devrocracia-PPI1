@@ -35,8 +35,14 @@ def problematiques():
     return render_template('problematiques.html',liste_prob = liste_prob,len = len_, showform=request.args.get("showform"))
 
 
-@app.route('/problematique/<int:id_prob>')
+@app.route('/problematique/<int:id_prob>',methods=["GET","POST"])
 def problematique(id_prob):
+
+    if request.method == "POST":
+        texte = request.form.get("message")
+        fonctions_pratique.EnvoieMessage(session["mail"],texte,id_prob)
+        return redirect("/problematique/"+str(id_prob))
+
     prob = fonctions_pratique.GetProblematique(id_prob)
     questions = fonctions_pratique.GetQuestions(id_prob)
     if questions == None or questions == []:

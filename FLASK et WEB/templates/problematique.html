@@ -36,13 +36,21 @@
     {%endfor%}
     </div>
 
-    <h2>Connecte-toi pour ajouter des solutions ou voter</h2>
+    <h2>Connecte-toi pour ajouter des solutions, envoyer des messages ou voter</h2>
     {% endif %}
 
     {% for m in messages %}
         <p>{{m}}</p>
     {% endfor %}
-
+    {% if session.mail %}
+    <p class="envoie message">
+        <form class="form_new_msg" method ="POST">
+            <input autocomplete="off" autofocus name="message" placeholder="Message a envoyé" type="text">
+            <input type="submit" value="Envoyer">
+        </form>
+    </p>
+    {% endif %}
+    
 
     <script>
         function show_hide(button_id,other_button_id)
