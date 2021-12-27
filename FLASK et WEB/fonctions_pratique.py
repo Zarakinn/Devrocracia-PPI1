@@ -232,7 +232,7 @@ def init_backtracking_vote(pb_parent_id, question_parent_id, solution_list) -> N
         sql = "INSERT INTO question (id,DateCreation,titre,auteur_email,question_parent_id, pb_parent_id) VALUES (?, ?, ?, ?, ?, ?)"
         cursor.executemany(sql, donnees)
 
-        for i,question in enumerate(solution_list):
+        for i,question in enumerate(solution_list[:-1]):
             #question[1]: question à laquelle la solution répond initialement, nécessaire pour savoir où backtracker
             donnees=[(new_id_sol+i, new_id_question, question[2], "(Hauteur "+str(question[1])+") "+question[3], 0)]
             sql = "INSERT INTO solutions (id, question_id, titre, texte, nb_vote) VALUES (?, ?, ?, ?, ?)"
@@ -251,6 +251,8 @@ def init_backtracking_vote(pb_parent_id, question_parent_id, solution_list) -> N
 def do_backtracking(backtrack_to_id, pb_parent_id) -> None :
     """Coupe toutes les questions postérieures à celle où on backtrack et réimplente la question en question""" 
     try:
+        print("___do BACKTRACKIGN")
+        print(backtrack_to_id, pb_parent_id)
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")

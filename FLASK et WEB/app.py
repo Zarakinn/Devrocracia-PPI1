@@ -76,8 +76,8 @@ def problematique(id_prob):
         redirect_to = "/problematique/"+str(id_prob)
         if choosen_solution != [] and choosen_solution[-1][2] == "Backtracking":
             backtrack_to = most_voted_solution[3][9:] #Ce parametre a été inscrit dans la description de la solution votée
-            i=1 #On ne connait pas le nombre de chiffre dans la donnée donc on prend toute la chaîne de chiffre
-            while len(backtrack_to) > i-1 and backtrack_to[i] is int:
+            i=0 #On ne connait pas le nombre de chiffre dans la donnée donc on prend toute la chaîne de chiffre
+            while backtrack_to[i+1] != ")":
                 i+=1
             backtrack_to = backtrack_to[:i+1]
             print("backtracking to :"+str(backtrack_to))
