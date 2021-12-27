@@ -37,42 +37,60 @@ def problematiques():
 
 @app.route('/problematique/<int:id_prob>')
 def problematique(id_prob):
-
     prob = fonctions_pratique.GetProblematique(id_prob)
-
     questions = fonctions_pratique.GetQuestions(id_prob)
     if questions == None or questions == []:
         raise "il n'y pas de question associé, mauvaise initialisation"
-
     last_question = questions[-1]
     possible_solutions = fonctions_pratique.GetSolutions(last_question[0])
+    messages = fonctions_pratique.Get_Messages(last_question[0])
+    choosen_solution = fonctions_pratique.Get_Choosen_Solution(questions)
+    every_solutions = fonctions_pratique.Get_All_Solutions(questions)
 
     #Spécifique au vote
     vote_id = request.args.get("id")
-
     if vote_id != None and session["mail"]!= None:
         fonctions_pratique.Vote(vote_id, last_question[0], session["mail"])
         return redirect("/problematique/"+str(id_prob))
 
     #Différenciation de la page selon si l'on vote pour la prochaine question ou pour la prochaine solution
     etat = fonctions_pratique.Get_Voting_For_Solution_or_Question(id_prob)
-    if etat == "vote solution":
+    if choosen_solution != [] and choosen_solution[-1][2] == "Backtracking":
+        message_vote = "Votez pour la solution à laquelle retourner. (backtracking)"
+    elif etat == "vote solution":
         message_vote = "Votez pour une solution ou proposez-en une nouvelle."
     elif etat == "vote question":
         message_vote = "Votez pour la prochaine question ou proposez-en une nouvelle."
 
-
     most_voted_solution = fonctions_pratique.Get_Most_Voted_Solution(last_question[0])
-    #Création d'une nouvelle branche à partir de la solution la plus votée
+        #Création d'une nouvelle branche à partir de la solution la plus votée
     if request.args.get("cloture") and most_voted_solution != None:        
         most_voted_solution_texte = most_voted_solution[2]
-        if etat == "vote solution":
+        print("MOST VOTED SOLUTION DESCRIPTION:" + most_voted_solution_texte)
+        redirect_to = "/problematique/"+str(id_prob)
+        if choosen_solution != [] and choosen_solution[-1][2] == "Backtracking":
+            backtrack_to = most_voted_solution[3][9:] #Ce parametre a été inscrit dans la description de la solution votée
+            i=1 #On ne connait pas le nombre de chiffre dans la donnée donc on prend toute la chaîne de chiffre
+            while len(backtrack_to) > i-1 and backtrack_to[i] is int:
+                i+=1
+            backtrack_to = backtrack_to[:i+1]
+            print("backtracking to :"+str(backtrack_to))
+            fonctions_pratique.do_backtracking(backtrack_to, id_prob)
+            return redirect(redirect_to)
+        elif most_voted_solution_texte == "Backtracking":
+            print("bacc")
+            show_where_return = True
+            fonctions_pratique.init_backtracking_vote(id_prob, last_question[0], choosen_solution)
+            return redirect(redirect_to)
+        elif etat == "vote solution":
             fonctions_pratique.Etend_Branche("Question suivante", None, last_question[0], id_prob)
-            return redirect("/problematique/"+str(id_prob))
+            print("branche etendue en vote solution")
+            return redirect(redirect_to)
         elif etat == "vote question":
+            print("branche etendue en vote question")
             #Il n'y a pour l'instant pas de mémoire pour l'id de l'utilisateur qui propose la solution retenue d'ou le None ci-dessous
             fonctions_pratique.Etend_Branche(most_voted_solution_texte, None,last_question[0], id_prob) 
-            return redirect("/problematique/"+str(id_prob))
+            return redirect(redirect_to)
 
     #solutions pour lequel l'utilisateur a voté
     voted_solution = None
@@ -81,9 +99,6 @@ def problematique(id_prob):
         voted_solution=fonctions_pratique.Get_Solution_Voter_by_User(last_question[0],session["mail"])
         print("Voted prop = " + str(voted_solution))
 
-    messages = fonctions_pratique.Get_Messages(last_question[0])
-    choosen_solution = fonctions_pratique.Get_Choosen_Solution(questions)
-    every_solutions = fonctions_pratique.Get_All_Solutions(questions)
     
     return render_template(
         'problematique.html',
@@ -96,7 +111,7 @@ def problematique(id_prob):
         possible_solutions=possible_solutions,
         voted_solution=voted_solution,
         message_vote=message_vote,
-        messages=messages
+        messages=messages,
         )
 
 

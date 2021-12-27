@@ -186,24 +186,97 @@ def Etend_Branche(titre,utilisateur,question_parent, pb_parent_id) -> None :
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
 
+        cursor.execute("SELECT max(id) FROM solutions")
+        new_id_sol=cursor.fetchone()[0]+1
+
         cursor.execute("SELECT max(id) FROM question")
-        new_id=cursor.fetchone()[0]+1
+        new_id_question=cursor.fetchone()[0]+1
 
         cursor.execute("SELECT date('now')")
         date=cursor.fetchone()[0]
 
-        donnees=[(new_id,date,titre,utilisateur,question_parent, pb_parent_id)]
+        donnees=[(new_id_question,date,titre,utilisateur,question_parent, pb_parent_id)]
         sql = "INSERT INTO question (id,DateCreation,titre,auteur_email,question_parent_id, pb_parent_id) VALUES (?, ?, ?, ?, ?, ?)"
+        cursor.executemany(sql, donnees)
+
+        donnees=[(new_id_sol, new_id_question, "Backtracking", "Vote pour le retour en arrière.", 0)]
+        sql = "INSERT INTO solutions (id, question_id, titre, texte, nb_vote) VALUES (?, ?, ?, ?, ?)"
         cursor.executemany(sql, donnees)
         
         connexion.commit()
-        print("Enregistrements insérés avec succès dans la table question")
+        print("Enregistrements insérés avec succès dans la table question et solutions")
         cursor.close()
         connexion.close()
         print("Connexion SQLite est fermée")
     except sqlite3.Error as error:
         print("Erreur lorsque la branche a été étendu", error)
 
+
+def init_backtracking_vote(pb_parent_id, question_parent_id, solution_list) -> None :
+    """Ajoute "backtracking" en tant que nouvelle solution et tous les points de retour possibles en solutions"""
+    try:
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+        print("Connexion réussie à SQLite")
+
+        cursor.execute("SELECT max(id) FROM solutions")
+        new_id_sol=cursor.fetchone()[0]+1
+
+        cursor.execute("SELECT max(id) FROM question")
+        new_id_question=cursor.fetchone()[0]+1
+
+        cursor.execute("SELECT date('now')")
+        date=cursor.fetchone()[0]
+
+        donnees=[(new_id_question, date, "Où revenir ?", None, question_parent_id, pb_parent_id)]
+        sql = "INSERT INTO question (id,DateCreation,titre,auteur_email,question_parent_id, pb_parent_id) VALUES (?, ?, ?, ?, ?, ?)"
+        cursor.executemany(sql, donnees)
+
+        for i,question in enumerate(solution_list):
+            #question[1]: question à laquelle la solution répond initialement, nécessaire pour savoir où backtracker
+            donnees=[(new_id_sol+i, new_id_question, question[2], "(Hauteur "+str(question[1])+") "+question[3], 0)]
+            sql = "INSERT INTO solutions (id, question_id, titre, texte, nb_vote) VALUES (?, ?, ?, ?, ?)"
+            cursor.executemany(sql, donnees)
+                
+        connexion.commit()
+        print("init_backtracking_vote erreur")
+        cursor.close()
+        connexion.close()
+        print("Connexion SQLite est fermée")
+    except sqlite3.Error as error:
+        print("init_backtracking_vote erreur", error)
+
+
+
+def do_backtracking(backtrack_to_id, pb_parent_id) -> None :
+    """Coupe toutes les questions postérieures à celle où on backtrack et réimplente la question en question""" 
+    try:
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+        print("Connexion réussie à SQLite")
+
+        cursor.execute("SELECT max(id) FROM question")
+        new_id_question=cursor.fetchone()[0]+1
+
+        #Coupage
+        cursor.execute("UPDATE question SET branche_morte = 1 WHERE pb_parent_id = ? AND id > ?", (pb_parent_id, backtrack_to_id))
+        cursor.execute("DELETE FROM question WHERE branche_morte = 1") #Pour l'instant pas de mémoire du backtracking
+
+        #Reimplementation
+        cursor.execute("SELECT DateCreation, titre, auteur_email, question_parent_id FROM question where id = ?",(backtrack_to_id,))
+        question_to_restore=cursor.fetchone()
+        DateCreation, titre, auteur_email, question_parent_id = question_to_restore
+        donnees=[(new_id_question,DateCreation,titre,auteur_email,question_parent_id,pb_parent_id)]
+        sql = "INSERT INTO question (id,DateCreation,titre,auteur_email,question_parent_id, pb_parent_id) VALUES (?, ?, ?, ?, ?, ?)"
+        cursor.executemany(sql, donnees)        
+
+        connexion.commit()
+        print("do_backtracking succès")
+        cursor.close()
+        connexion.close()
+        print("Connexion SQLite est fermée")
+    except sqlite3.Error as error:
+        print("do_backtracking echec", error)
 
 def Vote(solution_id, id_question, utilisateur) -> None :
     """vérifie contrainte d’intégrité, éligibilité aux votes et change compte de vote"""
