@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from logging import fatal
+from os import supports_follow_symlinks
 from re import U
 import sqlite3
 from typing import List
@@ -144,6 +145,19 @@ def Get_All_Solutions(questions : list) -> list:
             
             cursor.execute("SELECT * FROM solutions WHERE question_id=? ", (q[0],))
             solution_to_q=cursor.fetchall()
+
+            cursor.execute("SELECT SUM(nb_vote) FROM solutions WHERE question_id=?",(q[0],))
+            nb_vote_total = cursor.fetchone()[0]
+            if nb_vote_total == None: 
+                every_solutions.append(solution_to_q)
+                continue
+
+            nb_vote_total=max(1,nb_vote_total) # evite 0 division error
+
+            for i in range(len(solution_to_q)):
+                solution_to_q[i] = solution_to_q[i]+(solution_to_q[i][4]/nb_vote_total*100,) # rajoute le pourcentage de vote
+            
+            
             every_solutions.append(solution_to_q)
     
         cursor.close()
