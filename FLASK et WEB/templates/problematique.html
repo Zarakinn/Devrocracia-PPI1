@@ -6,8 +6,8 @@
     <h1>{{prob[2]}}</h1>
     {% for i in range(0,len_question-1) %}
     <div class="tablo-question-solution">
-        <button id="'q'+{{questions[i][0]}}" class="question-button" onclick=show_hide('q'+{{questions[i][0]}},'s'+{{choosen_solution[i][0]}})>{{questions[i][2]}}</button> <!--si qqun comprend pk ça fait dla merde ici-->
-        <button id="'s'+{{choosen_solution[i][0]}}" class="solution-button" onclick=show_hide('s'+{{choosen_solution[i][0]}},'q'+{{questions[i][0]}})>{{choosen_solution[i][2]}}</button>
+        <button id="'q'+{{questions[i][0]}}" class="question-button" onclick='show_hide("q"+"{{questions[i][0]}}","s"+"{{choosen_solution[i][0]}}")'>{{questions[i][2]}}</button> <!--si qqun comprend pk ça fait dla merde ici-->
+        <button id="'s'+{{choosen_solution[i][0]}}" class="solution-button" onclick='show_hide("s"+"{{choosen_solution[i][0]}}","q"+"{{questions[i][0]}}")'>{{choosen_solution[i][2]}}</button>
     </div>
     <!--toute la fin du for est fucked up pour l'instant-->
     <div id="'-q'+{{questions[i][0]}}" class="tablo-gagnants-perdants">
