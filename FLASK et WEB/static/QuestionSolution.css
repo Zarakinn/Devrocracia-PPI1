@@ -2,7 +2,7 @@ h1 {
     font-family: Verdana;
     color: #000000;
     text-align: center;
-	font-size:64px;
+	font-size:60px;
 }
 
 h2{
@@ -19,40 +19,40 @@ div.tablo-question-solution{
 	margin: 30px 0px 0px auto;
 }
 
-a.question-button{
+button.question-button{
 	background-color: #1ab26b;
 	width:max-content;
 	border:none;
 	color:white;
     padding: 10px 20px;
 	text-align: center;
-	font-size:64px;
+	font-size:40px;
     border-radius: 20px 0px 0px 20px;
 	margin: 0px 0px 0px auto;
 	cursor:pointer;
 }
 
-a.solution-button{
+button.solution-button{
 	background-color: #4169E1;
 	width:max-content;
 	border:none;
 	color:white;
     padding: 10px 20px;
 	text-align: center;
-	font-size:64px;
+	font-size:40px;
     border-radius: 0px 20px 20px 0px;
 	margin: 0px auto 0px 0px;
 	cursor:pointer;
 }
 
-a.question-button-only{
+button.question-button-only{
 	background-color: #1ab26b;
 	width:max-content;
 	border:none;
 	color:white;
     padding: 10px 20px;
 	text-align: center;
-	font-size:64px;
+	font-size:40px;
     border-radius: 20px;
 	margin: 0px 0px 0px auto;
 	cursor:pointer;
@@ -64,6 +64,12 @@ div.tablo-choix{
 	margin: 30px;
 }
 
+div.tablo-gagnants-perdants{
+	display: none;
+    grid-template-columns: auto auto auto auto;
+	margin: 30px;
+}
+
 .choix{
 	background-color: #FDD017;
 	width:max-content;
@@ -71,8 +77,8 @@ div.tablo-choix{
 	color:white;
     padding: 10px 20px;
 	text-align: center;
-	font-size:56px;
-    border-radius: 20px;
+	font-size:30px;
+    border-radius: 15px;
 	margin:20px auto 0px auto;
 	cursor:pointer;
 }
@@ -84,8 +90,8 @@ div.tablo-choix{
 	color:white;
     padding: 10px 20px;
 	text-align: center;
-	font-size:56px;
-    border-radius: 20px;
+	font-size:30px;
+    border-radius: 15px;
 	margin:20px auto 0px auto;
 	cursor:pointer;
 }
@@ -97,8 +103,8 @@ div.tablo-choix{
 	color:white;
     padding: 10px 20px;
 	text-align: center;
-	font-size:56px;
-    border-radius: 20px;
+	font-size:30px;
+    border-radius: 15px;
 	margin:20px auto 0px auto;
 	cursor:pointer;
 }
@@ -109,9 +115,8 @@ div.tablo-choix{
 	color:white;
     padding: 10px 20px;
 	text-align: center;
-	font-size:56px;
-    border-radius: 20px;
+	font-size:30px;
+    border-radius: 15px;
 	margin:20px auto 0px auto;
 	cursor:pointer;
 }
-
