@@ -6,27 +6,35 @@
     <h1>{{prob[2]}}</h1>
     {% for i in range(0,len_question-1) %}
     <div class="tablo-question-solution">
-        <button id="'q'+{{questions[i][0]}}" class="question-button" onclick=show_hide('q'+{{questions[i][0]}},'s'+{{choosen_solution[i][0]}})>{{questions[i][2]}}</button> <!--si qqun comprend pk ça fait dla merde ici-->
-        <button id="'s'+{{choosen_solution[i][0]}}" class="solution-button" onclick=show_hide('s'+{{choosen_solution[i][0]}},'q'+{{questions[i][0]}})>{{choosen_solution[i][2]}}</button>
+        <button id="'q'+'{{choosen_questions[i][0]}}'" class="question-button" onclick="show_hide('q'+'{{questions[i][0]}}','s'+'{{choosen_solution[i][0]}}')">{{choosen_questions[i][2]}}</button>
+        <button id="'s'+'{{choosen_solution[i][0]}}'" class="solution-button" onclick="show_hide('s'+'{{choosen_solution[i][0]}}','q'+'{{questions[i][0]}}')">{{choosen_solution[i][2]}}</button>
     </div>
-
-    <div id="'-q'+{{questions[i][0]}}" class="tablo-gagnants-perdants">
-        <p class="choix-gagnant">{{choosen_solution[i]}}</p> <!--Le probleme de faire tout dans un tableau est ici. Pour un rang i de question et de solution, la solution gagnante et la question gagnante n'ont pas le rang i dans choosen_solution-->
-        {%for j in range(0,len(questions))%}
-        <p class="choix-perdant">questions[j]</p>
-        {%end for%}
+    <!--à voir si la fin du for marche-->
+    <div id="'-q'+'{{choosen_questions[i][0]}}'" class="tablo-gagnants-perdants">
+        <!--Le probleme de faire tout dans un tableau est ici. Pour un rang i de question et de solution, la solution gagnante et la question gagnante n'ont pas le rang i dans choosen_solution-->
+        {%for j in every_questions[i]%}
+            {% if j==choosen_question[i] %}
+                <p class="choix-gagnant">{{j}}</p> 
+            {% else %}
+                <p class="choix-perdant">{{j}}</p>
+            {% endif %}
+        {%endfor%}
     </div>
-
-    <div id="'-s'+{{choosen_solution[i][0]}}" class="tablo-gagnants-perdants">
-        <p class="choix-gagnant">{{choosen_solution[i]}}</p>
-        {%for j in range(0,len(every_solutions[i]))%}
-        <p class="choix-perdant">{{every_solutions[i][j]}}</p>
-        {%end for%}
+    
+    <div id="'-s'+'{{choosen_solution[i][0]}}'" class="tablo-gagnants-perdants">
+        {%for j in every_solutions[i]%}
+            {% if j==choosen_solution[i] %}
+                <p class="choix-gagnant">{{j}}</p> 
+            {% else %}
+                <p class="choix-perdant">{{j}}</p>
+            {% endif %}
+        {%endfor%}
     </div>
     {% endfor %}
 
+    
     <script>
-        function show_hide(button_id,other_button_id)
+        function show_hide(button_id,other_button_id) //cette fonction change le display css du bouton cliqué de grid à none (ça affiche ou non), si un autre grid est deja affiché elle le desactive au passage.
         {
             var Btn = document.getElementById("-"+button_id);
             var OtherBtn = document.getElementById("-"+other_button_id);
@@ -52,7 +60,7 @@
   
 
     <div class="tablo-question-solution">
-        <button class="question-button-only">{{last_question[2]}}</button> <!--faudra faire un cas où on est dans l'etape question ou l'etape solution-->
+        <button class="question-button-only">{{last_question[2]}}</button> <!--il faut un moyen de savoir si on est dans un cas : vote de question ou vote de solution-->
     </div>
 
     <h2>{{message_vote}}</h2>
