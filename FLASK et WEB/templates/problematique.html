@@ -12,7 +12,7 @@
     <!--à voir si la fin du for marche-->
     <div id="'-q'+'{{questions[i][0]}}'" class="tablo-gagnants-perdants">
         <p class="choix-gagnant">{{choosen_solution[i]}}</p> <!--Le probleme de faire tout dans un tableau est ici. Pour un rang i de question et de solution, la solution gagnante et la question gagnante n'ont pas le rang i dans choosen_solution-->
-        {%for j in questions%}
+        {%for j in questions[i]%}
         <p class="choix-perdant">{{j}}</p>
         {%endfor%}
     </div>
