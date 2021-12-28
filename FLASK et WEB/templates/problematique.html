@@ -9,7 +9,7 @@
         <button id="'q'+'{{questions[i][0]}}'" class="question-button" onclick="show_hide('q'+'{{questions[i][0]}}','s'+'{{choosen_solution[i][0]}}')">{{questions[i][2]}}</button>
         <button id="'s'+'{{choosen_solution[i][0]}}'" class="solution-button" onclick="show_hide('s'+'{{choosen_solution[i][0]}}','q'+'{{questions[i][0]}}')">{{choosen_solution[i][2]}}</button>
     </div>
-    <!--toute la fin du for est fucked up pour l'instant-->
+    <!--à voir si la fin du for marche-->
     <div id="'-q'+'{{questions[i][0]}}'" class="tablo-gagnants-perdants">
         <p class="choix-gagnant">{{choosen_solution[i]}}</p> <!--Le probleme de faire tout dans un tableau est ici. Pour un rang i de question et de solution, la solution gagnante et la question gagnante n'ont pas le rang i dans choosen_solution-->
         {%for j in questions%}
@@ -22,7 +22,7 @@
         {%for j in every_solutions[i]%}
         <p class="choix-perdant">{{j}}</p>
         {%endfor%}
-    </div>-->
+    </div>
     {% endfor %}
 
     <script>
