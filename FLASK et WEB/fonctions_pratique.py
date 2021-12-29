@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-from logging import fatal
-from os import supports_follow_symlinks
+from logging import error, fatal
+from os import curdir, supports_follow_symlinks
 from re import U
 import sqlite3
+from sqlite3.dbapi2 import connect
 from typing import List
 ## from werkzeug.datastructures import V        c'est quoi ca ????????
 
 database = "data/database.db"
+NextQuestionString = "Votez pour la prochaine question"
 
 
 def Creation_Problemes(titre,description,question_titre,utilisateur) -> None :
@@ -68,7 +70,8 @@ def Creation_Solution(question_id,titre,description) -> None :
     except sqlite3.Error as error:
         print("Erreur lors de l'insertion dans la table solutions", error)
 
-def Get_Solution_Voter_by_User(question_id, user) -> int:
+
+def Get_Solution_Voted_by_User(question_id, user) -> int:
     try:
         #removing previous vote
         connexion = sqlite3.connect(database)
@@ -88,7 +91,6 @@ def Get_Solution_Voter_by_User(question_id, user) -> int:
     except sqlite3.Error as error:
         print("Erreur lors du vote", error)
         return
-
 
 
 def Get_Most_Voted_Solution(question_id) -> int :
@@ -111,63 +113,151 @@ def Get_Most_Voted_Solution(question_id) -> int :
     except sqlite3.Error as error:
         print("Erreur lors de la récupération de la solution la plus voté", error)
 
-def Get_Choosen_Solution(questions : list) -> list:
+
+#region Get Solution / Questions
+
+def GetChoices(id_prob : int) -> list:
+    ## Renvoie la liste Question_initiale, "Quelle question apres", question 1, "Quelle question apres", question 2 ...
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
-        #print("Connexion réussie à SQLite")
-        choosen_solutions = []
+        print("Connexion réussie à SQLite")
 
-        for q in questions:
-            cursor.execute("SELECT max(nb_vote) FROM solutions WHERE question_id=? ",(q[0],))
-            nb_vote_max=cursor.fetchone()
-            nb_vote_max=nb_vote_max[0]
-            #print("Le maximum de vote est " + str(nb_vote_max))
-            cursor.execute("SELECT * FROM solutions WHERE question_id=? AND nb_vote=? ", (q[0],nb_vote_max))
-            best_solution=cursor.fetchone()
-            choosen_solutions.append(best_solution)
-    
+        liste_choix = []
+
+        cursor.execute("SELECT * FROM question WHERE pb_parent_id = ? AND id=question_parent_id ",(id_prob,)) # le premier
+        choix= cursor.fetchone()
+        liste_choix.append(choix)
+
+        b = True
+        while b:
+            cursor.execute("SELECT * FROM question WHERE question_parent_id = ? AND NOT id=question_parent_id", (liste_choix[-1][0],)) # on cherche si le dernier choix a un enfant
+            choix = cursor.fetchone()
+            if choix == None:
+                b = False
+                break
+            else :
+                 liste_choix.append(choix)
+
+        print("Récupération des choix réussi")
         cursor.close()
         connexion.close()
-        #print("Connexion SQLite est fermée")
-        return choosen_solutions[:-1]
+        print("Connexion SQLite est fermée")
+        return liste_choix
     except sqlite3.Error as error:
-        print("Erreur lors de la récupération des solutions choisi", error)
+        print("Erreur lors de la récupération des choix", error)
 
-def Get_All_Solutions(questions : list) -> list:
+def GetAllQuestion(choosen_question : list):
+    ## celle dont le parent a pour titre NextQuestionString
+    try :
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+
+        all_questions =[choosen_question[0]]
+
+        for i in range(1,len(choosen_question)):
+
+            cursor.execute("SELECT * FROM solutions WHERE question_id=?",(choosen_question[i][4],)) # question avec le meme choix parent
+            questions = cursor.fetchall()
+            all_questions.append(questions)
+        
+        cursor.close()
+        connexion.close()
+        print("Récupération de toutes les questions effectués")
+        return all_questions
+    except sqlite3.Error as error:
+        print("Erreur lors de la récupération de toutes les questions :",error)
+    
+
+def GetChoosenQuestion_As_Question( choices : list):
+    #renvoie la liste q_i, question choisi lors du choix 2, question choisi lors du choix 4, ....
+    #Les données sont donc dans le schéma questions
+    all_questions =[choices[0]]
+    n = len(choices)
+
+    for i in range(n):
+        if choices[i][2]==NextQuestionString and i+1 < n:
+            all_questions.append(choices[i+1])
+    return all_questions
+
+def GetChoosenQuestion_As_Solution(choosen_question : list):
+    # Avant qu'une question soit insérer dans la table question, elle était la solution du choix précédent "Quelle est la prochaine question",
+    # on souhaite récupérer cette ligne dans la table solution
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
-        #print("Connexion réussie à SQLite")
-        every_solutions = []
 
-        for q in questions:
-            
-            cursor.execute("SELECT * FROM solutions WHERE question_id=? ", (q[0],))
-            solution_to_q=cursor.fetchall()
+        choosen_question_as_solution = [[-1,-1,choosen_question[0][2],"",0]] # la question initiale n'a pas d'équivalent dans le schéma solution
+        for i in range(1,len(choosen_question)):
+            cursor.execute("SELECT * FROM solutions WHERE question_id=? AND titre=",(choosen_question[i][4],choosen_question[i][2]))
+            q = cursor.fetchone()
+            choosen_question_as_solution.append(q)
 
-            cursor.execute("SELECT SUM(nb_vote) FROM solutions WHERE question_id=?",(q[0],))
-            nb_vote_total = cursor.fetchone()[0]
-            if nb_vote_total == None: 
-                every_solutions.append(solution_to_q)
-                continue
-
-            nb_vote_total=max(1,nb_vote_total) # evite 0 division error
-
-            for i in range(len(solution_to_q)):
-                solution_to_q[i] = solution_to_q[i]+(solution_to_q[i][4]/nb_vote_total*100,) # rajoute le pourcentage de vote
-            
-            
-            every_solutions.append(solution_to_q)
-    
+        print("Récupération des questions choisi sous forme de solutions réussi")
         cursor.close()
         connexion.close()
-        #print("Connexion SQLite est fermée")
-        return every_solutions[:-1]
+        return choosen_question_as_solution
     except sqlite3.Error as error:
-        print("Erreur lors de la récupération de toutes les solutions", error)
+        print("Erreur lors de la récupération de toutes les questions :",error)
+    
 
 
+def GetAllSolution(choosen_question:list):
+    #L'argument choosen_question est une liste de question
+    try:
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+
+        all_solutions=[] #liste de liste de solution
+
+        for q in choosen_question:
+            cursor.execute("SELECT * FROM solutions WHERE question_id=?",(q[0],))
+            solutions = cursor.fetchall() #liste de solutions proposé pour la question q
+            all_solutions.append(solutions)
+
+        print("Récupération de toutes les solutions réussi")
+        cursor.close()
+        connexion.close()
+        return all_solutions
+    except sqlite3.Error as error:
+        print("Erreur lors de la récupération de toutes les solutions :",error)
+
+def GetChoosenSolution(all_solution):
+    # all_solution est une liste1 de liste2 de solutions
+    # on veut la liste de taille liste1 des solutions aux seins des liste2 ayant eu le plus de votes
+    choosen_solution = []
+
+    for solutions in all_solution:
+        #solutions est une liste de solutions
+        choosen_sol = solutions[0]
+        votes = solutions[0][4]
+        for s in solutions:
+            if s[4] > votes:
+                choosen_sol = s 
+                votes = choosen_sol[4]
+        # on ajoute celle qui a eu le plus de votes
+        choosen_solution.append(choosen_sol)
+    
+    return choosen_solution
+
+def GetSolutionsFromQuestionID(id_question : int) -> list:
+    try:
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+        print("Connexion réussie à SQLite")
+
+        cursor.execute("SELECT * FROM solutions WHERE question_id = ?",(id_question,))
+        liste_solution = cursor.fetchall()
+        
+        print("Récupération des propositions réussi")
+        cursor.close()
+        connexion.close()
+        print("Connexion SQLite est fermée")
+        return liste_solution
+    except sqlite3.Error as error:
+        print("Erreur lors de la récupération des solutions", error)
+
+#endregion
 
 def Get_Voting_For_Solution_or_Question(pb_parent_id) -> int :
     """Si le nombre de question d'un problème est impair on vote pour une solution, sinon pour une question."""
@@ -397,53 +487,6 @@ def GetProblematique(id_prob : int) -> list:
     except sqlite3.Error as error:
         print("Erreur lors de la récupération d'une problématique", error)
 
-def GetQuestions(id_prob : int) -> list:
-    try:
-        connexion = sqlite3.connect(database)
-        cursor = connexion.cursor()
-        print("Connexion réussie à SQLite")
-
-        liste_questions = []
-
-        cursor.execute("SELECT * FROM question WHERE pb_parent_id = ? AND id=question_parent_id ",(id_prob,))
-        question = cursor.fetchone()
-        liste_questions.append(question)
-
-        b = True
-        while b:
-            cursor.execute("SELECT * FROM question WHERE question_parent_id = ? AND NOT id=question_parent_id", (liste_questions[-1][0],)) # on cherche si la derniere sous proposition a un enfant
-            question = cursor.fetchone()
-            if question == None:
-                b = False
-                break
-            else :
-                 liste_questions.append(question)
-
-
-        print("Récupération des questions réussi")
-        cursor.close()
-        connexion.close()
-        print("Connexion SQLite est fermée")
-        return liste_questions
-    except sqlite3.Error as error:
-        print("Erreur lors de la récupération des questions", error)
-
-def GetSolutions(id_question : int) -> list:
-    try:
-        connexion = sqlite3.connect(database)
-        cursor = connexion.cursor()
-        print("Connexion réussie à SQLite")
-
-        cursor.execute("SELECT * FROM solutions WHERE question_id = ?",(id_question,))
-        liste_solution = cursor.fetchall()
-        
-        print("Récupération des propositions réussi")
-        cursor.close()
-        connexion.close()
-        print("Connexion SQLite est fermée")
-        return liste_solution
-    except sqlite3.Error as error:
-        print("Erreur lors de la récupération des solutions", error)
 
 def ValidEmail(email :str) -> bool:
     

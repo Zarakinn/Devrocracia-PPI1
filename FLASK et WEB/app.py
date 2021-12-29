@@ -39,7 +39,14 @@ def problematiques():
 def problematique(id_prob):
 
     prob = fonctions_pratique.GetProblematique(id_prob)
-    questions = fonctions_pratique.GetQuestions(id_prob)
+    choices = fonctions_pratique.GetChoices(id_prob)
+    questions = fonctions_pratique.GetChoosenQuestion_As_Question(choices)
+    choosen_questions = fonctions_pratique.GetChoosenQuestion_As_Solution(questions)
+    every_questions = fonctions_pratique.GetAllQuestion(questions)
+    every_solutions = fonctions_pratique.GetAllSolution(questions)
+    choosen_solution = fonctions_pratique.GetChoosenSolution(every_solutions)
+
+
     if questions == None or questions == []:
         raise "il n'y pas de question associé, mauvaise initialisation"
     last_question = questions[-1]
@@ -50,10 +57,8 @@ def problematique(id_prob):
         fonctions_pratique.EnvoieMessage(session["mail"],texte,last_question[0])
         return redirect("/problematique/"+str(id_prob))
 
-    possible_solutions = fonctions_pratique.GetSolutions(last_question[0])
+    possible_solutions = fonctions_pratique.GetSolutionsFromQuestionID(last_question[0])
     messages = fonctions_pratique.Get_Messages(last_question[0])
-    choosen_solution = fonctions_pratique.Get_Choosen_Solution(questions)
-    every_solutions = fonctions_pratique.Get_All_Solutions(questions)
 
     #Spécifique au vote
     vote_id = request.args.get("id")
@@ -91,7 +96,7 @@ def problematique(id_prob):
             fonctions_pratique.init_backtracking_vote(id_prob, last_question[0], choosen_solution)
             return redirect(redirect_to)
         elif etat == "vote solution":
-            fonctions_pratique.Etend_Branche("Question suivante", None, last_question[0], id_prob)
+            fonctions_pratique.Etend_Branche(fonctions_pratique.NextQuestionString, None, last_question[0], id_prob)
             print("branche etendue en vote solution")
             return redirect(redirect_to)
         elif etat == "vote question":
@@ -104,22 +109,23 @@ def problematique(id_prob):
     voted_solution = None
 
     if "mail" in session and session["mail"]!=None:
-        voted_solution=fonctions_pratique.Get_Solution_Voter_by_User(last_question[0],session["mail"])
+        voted_solution=fonctions_pratique.Get_Solution_Voted_by_User(last_question[0],session["mail"])
         print("Voted prop = " + str(voted_solution))
 
     
     return render_template(
         'problematique.html',
-        prob=prob,
-        last_question=last_question,
-        questions = questions,
-        choosen_solution=choosen_solution,
-        every_solutions=every_solutions,
-        len_question=len(questions),
-        possible_solutions=possible_solutions,
-        voted_solution=voted_solution,
-        message_vote=message_vote,
-        messages=messages,
+        prob = prob,
+        choosen_question = choosen_questions,
+        every_question = every_questions,
+        choosen_solution = choosen_solution,
+        every_solution = every_solutions,
+        last_question = last_question,
+        len_question = len(choosen_questions),
+        message_vote = message_vote,
+        possible_solution = possible_solutions,
+        voted_solution = voted_solution,
+        messages=messages
         )
 
 
