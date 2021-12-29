@@ -58,6 +58,8 @@ def problematique(id_prob):
         return redirect("/problematique/"+str(id_prob))
 
     possible_solutions = fonctions_pratique.GetSolutionsFromQuestionID(last_question[0])
+    print("Voici les solutions possibles")
+    print(possible_solutions)
     messages = fonctions_pratique.Get_Messages(last_question[0])
 
     #Spécifique au vote
@@ -68,6 +70,7 @@ def problematique(id_prob):
 
     #Différenciation de la page selon si l'on vote pour la prochaine question ou pour la prochaine solution
     etat = fonctions_pratique.Get_Voting_For_Solution_or_Question(id_prob)
+    print("Etat = " + etat)
     if choosen_solution != [] and choosen_solution[-1][2] == "Backtracking":
         message_vote = "Votez pour la solution à laquelle retourner. (backtracking)"
     elif etat == "vote solution":
@@ -112,7 +115,7 @@ def problematique(id_prob):
         voted_solution=fonctions_pratique.Get_Solution_Voted_by_User(last_question[0],session["mail"])
         print("Voted prop = " + str(voted_solution))
 
-    
+
     return render_template(
         'problematique.html',
         prob = prob,
