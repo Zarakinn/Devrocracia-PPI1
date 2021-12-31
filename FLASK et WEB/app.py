@@ -70,6 +70,8 @@ def problematique(id_prob):
     print(every_solutions)
     print("choosen_solutions")
     print(choosen_solutions)
+    print("Possible solution")
+    print(possible_solutions)
     
 
     #Spécifique au vote
@@ -135,7 +137,7 @@ def problematique(id_prob):
         every_question = every_questions,
         choosen_question = choosen_questions,
         choosen_solution = choosen_solutions,
-        len_question = len(questions),
+        len_question = len(choosen_questions),
         possible_solutions = possible_solutions,
         voted_solution = voted_solution,
         message_vote = message_vote,
