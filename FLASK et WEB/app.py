@@ -126,7 +126,12 @@ def problematique(id_prob):
         voted_solution=fonctions_pratique.Get_Solution_Voter_by_User(last_question[0],session["mail"])
         print("Voted prop = " + str(voted_solution))
 
+    incr_etat = 0
+    if etat == "vote solution": # si on est dans une phase de vote solution, la derniere question choisi n'a pas encore de réponse choisi associé
+        incr_etat = 1
     
+    print("incr_etat = " + str(incr_etat))
+        
     return render_template( #il faut homogeniser tous les s en fin de variables
         'problematique.html',
         prob = prob,
@@ -142,6 +147,7 @@ def problematique(id_prob):
         voted_solution = voted_solution,
         message_vote = message_vote,
         messages = messages,
+        incr_etat = incr_etat
         )
 
 
