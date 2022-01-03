@@ -464,7 +464,7 @@ def ValidEmail(email :str) -> bool:
     if email_decomposé[0]=="" or email_decomposé[1]=="":
         return False
 
-    if not email_decomposé[1].endswith(".com") or email_decomposé[1].endswith(".fr"):
+    if not email_decomposé[1].endswith(".com") or email_decomposé[1].endswith(".fr") or email_decomposé[1].endswith(".eu") or email_decomposé[1].endswith(".net"):
         return False
     return True
 
