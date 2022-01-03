@@ -15,7 +15,7 @@ def Creation_Problemes(titre,description,question_titre,utilisateur) -> None :
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
 
-        cursor.execute("SELECT date('now')")
+        cursor.execute("SELECT CURRENT_TIMESTAMP")
         date =cursor.fetchone()
         date=date[0]
 
@@ -367,8 +367,13 @@ def EnvoieMessage(utilisateur : str,texte : str,question_id : int) -> None :
         if new_id == (None,):
             new_id = [0]
         new_id=new_id[0]+1
-        sql = "INSERT INTO msg (id,texte,utilisateur_email,question_id) VALUES (?, ?, ?, ?)"
-        donnes=[(new_id,texte,utilisateur,question_id)]
+
+        cursor.execute("SELECT CURRENT_TIMESTAMP")
+        date =cursor.fetchone()
+        date=date[0]
+
+        sql = "INSERT INTO msg (id,texte,utilisateur_email,question_id,date) VALUES (?, ?, ?, ?,?)"
+        donnes=[(new_id,texte,utilisateur,question_id,date)]
         cursor.executemany(sql,donnes )
         connexion.commit()
         print("Enregistrements insérés avec succès dans la table message")
@@ -518,11 +523,7 @@ def Register(email : str, name :str, fname: str, password : str):
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
 
-
-        cursor.execute("SELECT date('now')")
-        date =cursor.fetchone()
-        date=date[0]
-        cursor.execute("INSERT INTO utilisateurs VALUES (?,?,?,?)",(email,name,fname,cryptageXOR(password),date))
+        cursor.execute("INSERT INTO utilisateurs VALUES (?,?,?,?)",(email,name,fname,cryptageXOR(password)))
 
         print("Nouvel utilisateurs insérer")
         connexion.commit()

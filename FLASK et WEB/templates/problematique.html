@@ -64,7 +64,7 @@
     {% if session.mail %}
         <div class="tablo-choix">
             {% for j in possible_solutions %}
-                {% if j[0]==voted_solutions %}
+                {% if j[0]==voted_solution %}
                     <a class="choisi" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}</a> <!--là y'a une erreur à fix-->
                 {% else %}
                     <a class="choix" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}</a>
@@ -97,7 +97,7 @@
 
     <div class="chatbox">
         {% for m in messages %}
-        <p class="chat"><span class="mail">{{m[2]}}:&nbsp;</span>{{m[1]}}&nbsp;&nbsp;&nbsp;&nbsp;<span class="date">{{m[3]}}</span></p>
+        <p class="chat"><span class="mail">{{m[2]}}:&nbsp;</span>{{m[1]}}&nbsp;&nbsp;&nbsp;&nbsp;<span class="date">{{m[4]}}</span></p>
         {% endfor %}
     </div>
 
