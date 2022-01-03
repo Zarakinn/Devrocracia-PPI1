@@ -65,7 +65,7 @@ div.tablo-choix{
 }
 
 div.tablo-gagnants-perdants{
-	display: none;
+	display: grid;
     grid-template-columns: auto auto auto auto;
 	margin: 30px;
 }
@@ -119,4 +119,63 @@ div.tablo-gagnants-perdants{
     border-radius: 15px;
 	margin:20px auto 0px auto;
 	cursor:pointer;
+}
+
+.form_new_msg{
+	display: grid;
+    grid-template-columns: auto auto;
+	margin: 90px 0px 0px 0px;
+}
+
+.message{
+	background-color: #AAAAAA;
+	width:max-content;
+	border:none;
+    padding: 10px 20px;
+	text-align: center;
+	font-size:20px;
+    border-radius: 20px;
+	margin: 0px 0px 0px auto;
+	cursor:pointer;
+}
+
+.submit{
+	background-color: #AAAAAA;
+	width:max-content;
+	border:none;
+    padding: 10px 20px;
+	text-align: center;
+	font-size:20px;
+    border-radius: 20px;
+	margin: 0px auto 0px 5px;
+}
+
+.chatbox{
+	width: max-width; 
+	height: 500px; 
+	line-height: 3em; 
+	overflow:scroll; 
+	border: thin #000 solid; 
+	padding: 5px;
+	margin: 20px 20px 0px 20px;
+}
+
+.chat{
+	background-color: #DDDDDD;
+	width:max-content;
+	border:none;
+    padding: 10px 20px;
+	text-align: center;
+	font-size:20px;
+    border-radius: 10px;
+	margin:10px;
+}
+
+.mail{
+	color:blue;
+}
+
+.date{
+	color:white;
+	font-size:16px;
 }
