@@ -10,19 +10,19 @@
 
     {% if showform %}
         {% if session.mail %}
-        <a class="prob-button" href="/problematiques?">+</a>
+        <a class="tronc" href="/problematiques?">+</a>
         <form class="form_new_pb" method ="POST">
-            <input autocomplete="off" autofocus name="new_pb_title" placeholder="new_pb_title" type="text">
-            <input autocomplete="off" autofocus name="new_pb_desc" placeholder="new_pb_desc" type="text">
-            <input autocomplete="off" autofocus name="first_question" placeholder="first_question" type="text">
+            <input autocomplete="off" autofocus name="new_pb_title" placeholder="nom de la nouvelle problématique" type="text">
+            <input autocomplete="off" name="new_pb_desc" placeholder="description de la problématique" type="text">
+            <input autocomplete="off" name="first_question" placeholder="première question qu'on doit se poser" type="text">
             <input type="submit">
         </form>
         {% else %}
-        <a class="prob-button" href="/problematiques?showform=True">+</a>
+        <a class="tronc" href="/problematiques?showform=True">+</a>
         <p> Tu dois te connecter pour ajouter une Problématiques</p>
         {% endif %}
     {% else %}
-        <a class="prob-button" href="/problematiques?showform=True">+</a>
+        <a class="tronc" href="/problematiques?showform=True">+</a>
     {% endif %}
 </body>
 {% endblock %}

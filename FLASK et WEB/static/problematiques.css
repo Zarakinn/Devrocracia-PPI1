@@ -18,8 +18,22 @@ a.prob-button{
 }
 
 form.form_new_pb{    /*copie de ci dessus mais avec cases plus larges*/
-	background-color: #1ab26b;
+	background-color: #7A523C;
 	width:600px;
+	border:none;
+	color:white;
+    padding: 10px 20px;
+	text-align: center;
+	font-size:52px;
+    border-radius: 20px;
+	margin: 30px auto 0px auto;
+	cursor:pointer;
+	display:grid;
+}
+
+.tronc{    /*MARRON*/
+	background-color: #7A523C;
+	width:max-content;
 	border:none;
 	color:white;
     padding: 10px 20px;
