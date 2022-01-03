@@ -50,6 +50,7 @@ CREATE TABLE "msg" (
 	"texte"	text,
 	"utilisateur_email" integer,
 	"question_id"	integer,
+	"date" date,
 	CONSTRAINT "msg_PK" PRIMARY KEY("id"),
 	FOREIGN KEY("question_id") REFERENCES "question_pb"("id"),
 	FOREIGN KEY(utilisateur_email) REFERENCES "utilisateurs"("email")

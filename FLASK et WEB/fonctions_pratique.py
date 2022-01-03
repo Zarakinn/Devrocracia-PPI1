@@ -21,6 +21,9 @@ def Creation_Problemes(titre,description,question_titre,utilisateur) -> None :
 
         cursor.execute("SELECT max(id) FROM pb ")
         new_pb_id=cursor.fetchone()
+        print(new_pb_id)
+        if new_pb_id==(None,):
+            new_pb_id=[0]
         new_pb_id=new_pb_id[0]+1
 
         sql_pb = "INSERT INTO pb (id,DateCreation,titre,texte,utilisateur_email) VALUES (?,?,?,?,?)"
@@ -30,6 +33,8 @@ def Creation_Problemes(titre,description,question_titre,utilisateur) -> None :
 
         cursor.execute("SELECT max(id) FROM question ")
         new_question_id=cursor.fetchone()
+        if new_question_id==(None,):
+            new_question_id=[0]
         new_question_id=new_question_id[0]+1
 
         sql_question = "INSERT INTO question (id,DateCreation,titre ,auteur_email, question_parent_id, pb_parent_id) VALUES (?,?,?,?,?,?)"
@@ -53,7 +58,10 @@ def Creation_Solution(question_id,titre,description) -> None :
         print("Connexion réussie à SQLite")
 
         cursor.execute("SELECT max(id) FROM solutions ")
-        new_id=cursor.fetchone()[0] + 1
+        new_id=cursor.fetchone()
+        if new_id==(None,):
+            new_id = [0]
+        new_id = new_id[0] + 1
 
         donnees=[(new_id,question_id,titre,description,0)]
         sql = "INSERT INTO solutions (id,question_id,titre,texte,nb_vote) VALUES (?, ?, ?, ?,?)"
@@ -160,6 +168,8 @@ def GetAllQuestions(choosen_question : list):
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
 
+        assert len(choosen_question) > 0, "aucune question choisi, ne peux pas renvoyer GetAllQuestions"
+
         all_questions =[[choosen_question[0]]]
 
         for i in range(1,len(choosen_question)):
@@ -207,10 +217,16 @@ def Etend_Branche(titre,utilisateur,question_parent, pb_parent_id) -> None :
         print("Connexion réussie à SQLite")
 
         cursor.execute("SELECT max(id) FROM solutions")
-        new_id_sol=cursor.fetchone()[0]+1
+        new_id_sol=cursor.fetchone()
+        if new_id_sol == (None,):
+            new_id_sol = [0]
+        new_id_sol = new_id_sol[0]+1
 
         cursor.execute("SELECT max(id) FROM question")
-        new_id_question=cursor.fetchone()[0]+1
+        new_id_question=cursor.fetchone()
+        if new_id_question==(None,):
+            new_id_question = [0]
+        new_id_question = new_id_question[0]+1
 
         cursor.execute("SELECT date('now')")
         date=cursor.fetchone()[0]
@@ -240,10 +256,16 @@ def init_backtracking_vote(pb_parent_id, question_parent_id, solution_list) -> N
         print("Connexion réussie à SQLite")
 
         cursor.execute("SELECT max(id) FROM solutions")
-        new_id_sol=cursor.fetchone()[0]+1
+        new_id_sol=cursor.fetchone()
+        if new_id_sol == (None,):
+            new_id_sol = [0]
+        new_id_sol = new_id_sol[0]+1
 
         cursor.execute("SELECT max(id) FROM question")
-        new_id_question=cursor.fetchone()[0]+1
+        new_id_question=cursor.fetchone()
+        if new_id_question== (None,):
+            new_id_question = [0]
+        new_id_question = new_id_question[0]+1
 
         cursor.execute("SELECT date('now')")
         date=cursor.fetchone()[0]
@@ -342,6 +364,8 @@ def EnvoieMessage(utilisateur : str,texte : str,question_id : int) -> None :
         print("Insertion de message ...")
         cursor.execute("SELECT max(id) FROM msg ")
         new_id=cursor.fetchone()
+        if new_id == (None,):
+            new_id = [0]
         new_id=new_id[0]+1
         sql = "INSERT INTO msg (id,texte,utilisateur_email,question_id) VALUES (?, ?, ?, ?)"
         donnes=[(new_id,texte,utilisateur,question_id)]
@@ -396,7 +420,7 @@ def GetProblematique(id_prob : int) -> list:
         print("Connexion réussie à SQLite")
         cursor.execute("SELECT * FROM pb WHERE id=?",(id_prob,))
         pb = cursor.fetchone()
-        print("Récupération des problématiques réussi")
+        print("Récupération de la problématique")
         cursor.close()
         connexion.close()
         print("Connexion SQLite est fermée")
@@ -464,7 +488,8 @@ def ValidEmail(email :str) -> bool:
     if email_decomposé[0]=="" or email_decomposé[1]=="":
         return False
 
-    if not email_decomposé[1].endswith(".com") or email_decomposé[1].endswith(".fr") or email_decomposé[1].endswith(".eu") or email_decomposé[1].endswith(".net"):
+    print(email_decomposé)
+    if not (email_decomposé[1].endswith(".com") or email_decomposé[1].endswith(".fr") or email_decomposé[1].endswith(".eu") or email_decomposé[1].endswith(".net")):
         return False
     return True
 
@@ -493,7 +518,11 @@ def Register(email : str, name :str, fname: str, password : str):
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
 
-        cursor.execute("INSERT INTO utilisateurs VALUES (?,?,?)",(email,name,fname,cryptageXOR(password)))
+
+        cursor.execute("SELECT date('now')")
+        date =cursor.fetchone()
+        date=date[0]
+        cursor.execute("INSERT INTO utilisateurs VALUES (?,?,?,?)",(email,name,fname,cryptageXOR(password),date))
 
         print("Nouvel utilisateurs insérer")
         connexion.commit()
