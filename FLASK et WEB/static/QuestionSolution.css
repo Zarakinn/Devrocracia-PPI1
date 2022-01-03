@@ -65,7 +65,7 @@ div.tablo-choix{
 }
 
 div.tablo-gagnants-perdants{
-	display: grid;
+	display: none;
     grid-template-columns: auto auto auto auto;
 	margin: 30px;
 }
@@ -136,7 +136,7 @@ div.tablo-gagnants-perdants{
 	font-size:20px;
     border-radius: 20px;
 	margin: 0px 0px 0px auto;
-	cursor:pointer;
+	cursor:text;
 }
 
 .submit{
@@ -148,6 +148,7 @@ div.tablo-gagnants-perdants{
 	font-size:20px;
     border-radius: 20px;
 	margin: 0px auto 0px 5px;
+	cursor:pointer;
 }
 
 .chatbox{

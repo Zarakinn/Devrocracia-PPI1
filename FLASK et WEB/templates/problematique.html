@@ -7,8 +7,8 @@
     {% for i in range(0,len_question-incr_etat) %}
 
     <div class="tablo-question-solution">
-        <button id="{{choosen_question[i][0]}}" class="question-button" onclick="show_hide(this.id,{{choosen_solution[i][0] | safe}})">{{choosen_question[i][2]}}</button>
-        <button id="{{choosen_solution[i][0]}}" class="solution-button" onclick="show_hide(this.id,{{choosen_question[i][0] | safe}})">{{choosen_solution[i][2]}}</button>
+        <button id="{{choosen_question[i][0]}}" class="question-button" onclick="show_hide(this.id,'{{choosen_solution[i][0]}}')">{{choosen_question[i][2]}}</button>
+        <button id="{{choosen_solution[i][0]}}" class="solution-button" onclick="show_hide(this.id,'{{choosen_question[i][0]}}')">{{choosen_solution[i][2]}}</button>
     </div>
 
     <!--à voir si la fin du for marche-->
@@ -62,16 +62,19 @@
     <h2>{{message_vote}}</h2>
 
     {% if session.mail %}
-    <div class="tablo-choix">
-        {% for j in possible_solutions %}
-            {% if j[0]==voted_solutions %}
-                <a class="choisi" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}</a>
-            {% else %}
-                <a class="choix" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}</a>
-            {% endif %}
-        {%endfor%}
-        <a class="choix" href="/problematique/ajout_prop/{{prob[0]}}/{{last_question[0]}}">+</a>
-    </div>
+        <div class="tablo-choix">
+            {% for j in possible_solutions %}
+                {% if j[0]==voted_solutions %}
+                    <a class="choisi" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}</a> <!--là y'a une erreur à fix-->
+                {% else %}
+                    <a class="choix" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}</a>
+                {% endif %}
+            {%endfor%}
+            {% if not(etat=="backtracking")%}
+            <a class="choix" href="/problematique/ajout_prop/{{prob[0]}}/{{last_question[0]}}">+</a>
+            {%endif%}
+        </div>
+
         <a href="/problematique/{{prob[0]}}?cloture=True"><br />Cloture des votes (expérimental)</a>
 
     {%else %}

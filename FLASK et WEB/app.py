@@ -91,6 +91,7 @@ def problematique(id_prob):
     etat = fonctions_pratique.Get_Voting_For_Solution_or_Question(id_prob)
     if all_choosen_solutions != [] and all_choosen_solutions[-1][2] == "Backtracking":
         message_vote = "Votez pour la solution à laquelle retourner. (backtracking)"
+        etat="backtracking"
     elif etat == "vote solution":
         message_vote = "Votez pour une solution ou proposez-en une nouvelle."
     elif etat == "vote question":
@@ -134,9 +135,10 @@ def problematique(id_prob):
         print("Voted prop = " + str(voted_solution))
 
     incr_etat = 0
-    if etat == "vote solution": # si on est dans une phase de vote solution, la derniere question choisi n'a pas encore de réponse choisi associé
+    if etat == "vote solution" or etat == "backtracking": # si on est dans une phase de vote solution, la derniere question choisi n'a pas encore de réponse choisi associé
         incr_etat = 1
     
+    print(etat)
     print("incr_etat = " + str(incr_etat))
         
     return render_template( #il faut homogeniser tous les s en fin de variables
@@ -154,7 +156,8 @@ def problematique(id_prob):
         voted_solution = voted_solution,
         message_vote = message_vote,
         messages = messages,
-        incr_etat = incr_etat
+        incr_etat = incr_etat,
+        etat=etat
         )
 
 
