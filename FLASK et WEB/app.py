@@ -57,14 +57,15 @@ def problematique(id_prob):
     choosen_questions = questions[0::2] #On retire toutes les "questions suivante" en gardant les éléments pairs
     choosen_solutions = all_choosen_solutions[0::2]
 
-    for i in range(len(choosen_questions)): #on veut que le premier element soit de la forme "q'x'", il s'agit d'un tuple donc on le reconstruit.
-        choosen_questions[i] = ("q"+str(choosen_questions[i][0]),) + choosen_questions[i][1:] 
-    for i in range(len(choosen_solutions)):
-        choosen_solutions[i] = ("s"+str(choosen_solutions[i][0]),) + choosen_solutions[i][1:]
 
     every_solutions = fonctions_pratique.GetAllSolutions(choosen_questions)
     every_questions = fonctions_pratique.GetAllQuestions(choosen_questions)
 
+    for i in range(len(choosen_questions)): #on veut que le premier element soit de la forme "q'x'", il s'agit d'un tuple donc on le reconstruit.
+        choosen_questions[i] = ("q"+str(choosen_questions[i][0]),) + choosen_questions[i][1:] 
+    for i in range(len(choosen_solutions)):
+        choosen_solutions[i] = ("s"+str(choosen_solutions[i][0]),) + choosen_solutions[i][1:]
+        
     print("------------ATTENTION variables interessantes--------------")
     print("questions")
     print(questions)
