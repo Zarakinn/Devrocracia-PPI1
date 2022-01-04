@@ -32,13 +32,12 @@ def problematiques():
         if new_pb_desc is not None and new_pb_title is not None:
             fonctions_pratique.Creation_Problemes(new_pb_title, new_pb_desc, first_question, session["mail"]) ## Attention, mettre mail pas name
             print(new_pb_title,new_pb_desc, first_question, session["mail"])
-            return redirect('/problematiques')
+            return redirect('/problematique/'+str(len_+1))
     return render_template('problematiques.html',liste_prob = liste_prob,len = len_, showform=request.args.get("showform"))
 
 
 @app.route('/problematique/<int:id_prob>',methods=["GET","POST"])
 def problematique(id_prob):
-
     prob = fonctions_pratique.GetProblematique(id_prob)
 
     if prob == None or []:
@@ -95,6 +94,7 @@ def problematique(id_prob):
     print("Possible solution")
     print(possible_solutions)
     
+    #encre rafraichissemnt de page a faire
 
     #Spécifique au vote
     vote_id = request.args.get("id")
@@ -128,7 +128,7 @@ def problematique(id_prob):
             fonctions_pratique.do_backtracking(backtrack_to, id_prob)
             return redirect(redirect_to)
         elif most_voted_solution_texte == "Backtracking":
-            fonctions_pratique.init_backtracking_vote(id_prob, last_question[0], all_choosen_solutions)
+            fonctions_pratique.init_backtracking_vote(id_prob, last_question[0], choosen_solutions) #OS DE CONTENTION RIGHT THERE
             return redirect(redirect_to)
         elif etat == "vote solution":
             fonctions_pratique.Etend_Branche("Question suivante", None, last_question[0], id_prob)

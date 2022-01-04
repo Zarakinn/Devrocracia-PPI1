@@ -70,7 +70,6 @@ def Creation_Solution(question_id,titre,description) -> None :
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
-        print("Connexion réussie à SQLite")
 
         cursor.execute("SELECT max(id) FROM solutions ")
         new_id=cursor.fetchone()
@@ -83,10 +82,8 @@ def Creation_Solution(question_id,titre,description) -> None :
         cursor.executemany(sql, donnees)
         connexion.commit()
         
-        print("Enregistrements insérés avec succès dans la table solutions")
         cursor.close()
         connexion.close()
-        print("Connexion SQLite est fermée")
     except sqlite3.Error as error:
         print("Erreur lors de l'insertion dans la table solutions", error)
 
@@ -273,9 +270,14 @@ def Etend_Branche(titre,utilisateur,question_parent, pb_parent_id) -> None :
         sql = "INSERT INTO question (id,DateCreation,titre,auteur_email,question_parent_id, pb_parent_id) VALUES (?, ?, ?, ?, ?, ?)"
         cursor.executemany(sql, donnees)
 
-        donnees=[(new_id_sol, new_id_question, "Backtracking", "Vote pour le retour en arrière.", 0)]
-        sql = "INSERT INTO solutions (id, question_id, titre, texte, nb_vote) VALUES (?, ?, ?, ?, ?)"
-        cursor.executemany(sql, donnees)
+        cursor.execute("SELECT count(*) FROM question where pb_parent_id = ?",(pb_parent_id,))
+        count = cursor.fetchone()[0]
+
+
+        if count > 3: #on bloque le backtracking trop tôt dans la branche
+            donnees=[(new_id_sol, new_id_question, "Backtracking", "Vote pour le retour en arrière.", 0)]
+            sql = "INSERT INTO solutions (id, question_id, titre, texte, nb_vote) VALUES (?, ?, ?, ?, ?)"
+            cursor.executemany(sql, donnees)
         
         connexion.commit()
         cursor.close()
@@ -312,7 +314,7 @@ def init_backtracking_vote(pb_parent_id, question_parent_id, solution_list) -> N
         sql = "INSERT INTO question (id,DateCreation,titre,auteur_email,question_parent_id, pb_parent_id) VALUES (?, ?, ?, ?, ?, ?)"
         cursor.executemany(sql, donnees)
 
-        for i,question in enumerate(solution_list[:-1]):
+        for i,question in enumerate(solution_list[1:]):
             #question[1]: question à laquelle la solution répond initialement, nécessaire pour savoir où backtracker
             donnees=[(new_id_sol+i, new_id_question, question[2], "(Hauteur "+str(question[1])+") "+question[3], 0)]
             sql = "INSERT INTO solutions (id, question_id, titre, texte, nb_vote) VALUES (?, ?, ?, ?, ?)"
@@ -331,6 +333,7 @@ def do_backtracking(backtrack_to_id, pb_parent_id) -> None :
     Coupe toutes les questions postérieures à celle où on backtrack et réimplente la question en question
     """ 
     try:
+        print("_________________________________________________________________________")
         print(backtrack_to_id, pb_parent_id)
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -348,7 +351,10 @@ def do_backtracking(backtrack_to_id, pb_parent_id) -> None :
         #Reimplementation
         cursor.execute("SELECT DateCreation, titre, auteur_email, question_parent_id FROM question where id = ?",(backtrack_to_id,))
         question_to_restore=cursor.fetchone()
+        cursor.execute("DELETE FROM question WHERE id = ?",(backtrack_to_id,)) #pour remplacer l'ancienne question par celle au nouvel idée
         DateCreation, titre, auteur_email, question_parent_id = question_to_restore
+        print("QUESTION TO RESTOR")
+        print(question_to_restore)
         donnees=[(new_id_question,DateCreation,titre,auteur_email,question_parent_id,pb_parent_id)]
         sql = "INSERT INTO question (id,DateCreation,titre,auteur_email,question_parent_id, pb_parent_id) VALUES (?, ?, ?, ?, ?, ?)"
         cursor.executemany(sql, donnees)        
