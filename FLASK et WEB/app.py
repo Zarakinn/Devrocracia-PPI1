@@ -226,7 +226,7 @@ def error404(error):
 def error_db(error):
     return render_template("error.html",error_msg="Erreur sur la base de donnée: " + str(error))
 
-@app.route("/changekey/<string:key>")
-def changekey(key):
-    fonctions_pratique.ChangeKey(key)
-    return redirect("/")
+#@app.route("/changekey/<string:key>")
+#def changekey(key):
+#    fonctions_pratique.ChangeKey(key)
+#    return redirect("/")
