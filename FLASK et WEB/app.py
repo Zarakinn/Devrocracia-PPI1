@@ -1,4 +1,5 @@
 from logging import error
+from sqlite3.dbapi2 import DatabaseError
 from flask import Flask, render_template, session,request,redirect
 from flask_session import Session
 import fonctions_pratique
@@ -39,6 +40,10 @@ def problematiques():
 def problematique(id_prob):
 
     prob = fonctions_pratique.GetProblematique(id_prob)
+
+    if prob == None or []:
+        raise DatabaseError("La problématique n'existe pas")
+
     questions = fonctions_pratique.GetQuestions(id_prob)
     if questions == None or questions == []:
         raise "il n'y pas de question associé, mauvaise initialisation"
@@ -169,19 +174,6 @@ def problematique(id_prob):
         showform=request.args.get("showform")
         )
 
-
-
-
-@app.route('/problematique/ajout_prop/<int:id_prob>/<int:id_question>',methods=["GET","POST"])
-def Ajoute_prop(id_prob,id_question):
-
-    if request.method == "GET":
-        return render_template("ajout_proposition.html",id_prob=id_prob,id_question=id_question)
-    else :
-        print("Ajoute d'une proposition")
-        fonctions_pratique.Creation_Solution(id_question,request.form.get("titre"),request.form.get("texte"))
-        return redirect("/problematique/"+str(id_prob))    
-
 @app.route('/login', methods=["GET","POST"])
 def login():
     if request.method == "POST":
@@ -202,7 +194,7 @@ def login():
 @app.route('/inscription',methods=["POST"])
 def inscription():
     if request.method != "POST":
-        return render_template('login.html',error_msg="tente de s'inscrire avec un get")
+        return render_template('login.html',error_msg="tente de s'inscrire avec une méthode Get")
 
     email,name,fname,password = request.form.get("mail"),request.form.get("name"),request.form.get("fname"),request.form.get("password")
 
@@ -225,3 +217,11 @@ def logout():
     session["name"] = None
     session["fname"] = None
     return redirect('/')
+
+@app.errorhandler(404)
+def error404(error):
+    return render_template("error.html",error_msg="Erreur : " + str(error))
+
+@app.errorhandler(DatabaseError)
+def error_db(error):
+    return render_template("error.html",error_msg="Erreur sur la base de donnée: " + str(error))
