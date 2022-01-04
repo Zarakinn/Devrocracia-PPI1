@@ -8,7 +8,7 @@
 
     <div class="tablo-question-solution">
         <button id="{{choosen_question[i][0]}}" class="question-button" onclick="show_hide(this.id,'{{choosen_solution[i][0]}}')">{{choosen_question[i][2]}}</button>
-        <button id="{{choosen_solution[i][0]}}" class="solution-button" onclick="show_hide(this.id,'{{choosen_question[i][0]}}')">{{choosen_solution[i][2]}}</button>
+        <button id="{{choosen_solution[i][0]}}" title="{{choosen_solution[i][3]}}"class="solution-button" onclick="show_hide(this.id,'{{choosen_question[i][0]}}')">{{choosen_solution[i][2]}}</button>
     </div>
 
     <!--à voir si la fin du for marche-->
@@ -26,9 +26,9 @@
     <div id="{{'-'+choosen_solution[i][0]}}" class="tablo-gagnants-perdants">
         {%for j in every_solution[i]%}
             {% if j[2]==choosen_solution[i][2] %}
-                <p class="choix-gagnant">{{j[2]}}</p>
+                <p class="choix-gagnant" title="{{j[3]}}">{{j[2]}}</p>
             {% else %}
-                <p class="choix-perdant">{{j[2]}}</p>
+                <p class="choix-perdant" title="{{j[3]}}">{{j[2]}}</p>
             {% endif %}
         {%endfor%}
     </div>
@@ -65,13 +65,13 @@
         <div class="tablo-choix">
             {% for j in possible_solutions %}
                 {% if j[0]==voted_solution %}
-                    <a class="choisi" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}</a> <!--là y'a une erreur à fix-->
+                    <a class="choisi" title="{{j[3]}}" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}</a> <!--là y'a une erreur à fix-->
                 {% else %}
-                    <a class="choix" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}</a>
+                    <a class="choix" title="{{j[3]}}" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}</a>
                 {% endif %}
             {%endfor%}
             {% if not(etat=="backtracking")%}
-            <a class="choix" href="/problematique/ajout_prop/{{prob[0]}}/{{last_question[0]}}">+</a>
+                <a class="choix" title="Ajoute une proposition" href="/problematique/ajout_prop/{{prob[0]}}/{{last_question[0]}}">+</a> 
             {%endif%}
         </div>
 
