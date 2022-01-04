@@ -3,10 +3,23 @@ from logging import fatal
 from re import U
 import sqlite3
 from typing import List
-## from werkzeug.datastructures import V        c'est quoi ca ????????
 
 database = "data/database.db"
 
+
+def basic_query(sql, param_sql, error_msg):
+    try:
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+
+        cursor.execute(sql,param_sql)
+        query = cursor.fetchall()
+
+        cursor.close()
+        connexion.close()
+        return query
+    except sqlite3.Error as error:
+        print(error_msg, error)
 
 def Creation_Problemes(titre,description,question_titre,utilisateur) -> None :
     """
@@ -83,24 +96,16 @@ def Get_Solution_Voter_by_User(question_id, user) -> int:
     """
     On essaie de trouver si l'utilisateur passer en paramètre a déjà voté pour le choix identifié par question_id. Si c'est le cas, on renvoi son choixi sinon on renvoie None
     """
-    try:
-        #removing previous vote
-        connexion = sqlite3.connect(database)
-        cursor = connexion.cursor()
+    query = "SELECT solution_id FROM votes WHERE utilisateur_email = ? AND question_id =?"
+    param = (user,question_id)
+    error = "Erreur lors du vote"
+    solution = basic_query(query, param, error)
 
-        cursor.execute("SELECT solution_id FROM votes WHERE utilisateur_email = ? AND question_id =?",(user,question_id))
-        solution = cursor.fetchone()
-        if solution != None: 
-            solution = int(solution[0]) #On renvoie uniquement l'id de la solution pour laquelle il a voté
-            
-        cursor.close()
-        connexion.close()
-        print("Récupèration réussi de la solution que l'utilisateur a choisi")
-        return solution
+    if solution != None: 
+        solution = int(solution[0]) #On renvoie uniquement l'id de la solution pour laquelle il a voté
+        
+    return solution
 
-    except sqlite3.Error as error:
-        print("Erreur lors du vote", error)
-        return
 
 
 def Get_Most_Voted_Solution(question_id) -> int :
@@ -212,7 +217,6 @@ def GetAllQuestions(choosen_question : list):
         all_questions =[[choosen_question[0]]]
 
         for i in range(1,len(choosen_question)):
-
             cursor.execute("SELECT * FROM solutions WHERE question_id=?",(choosen_question[i][4],)) # question avec le meme choix parent
             questions = cursor.fetchall()
 
@@ -242,26 +246,15 @@ def Get_Voting_For_Solution_or_Question(pb_parent_id) -> int :
     On souhaite savoir si on est dans un choix de question ou un choix de solution. On utilise à notre avantage la structure de nos données :
     si le nombre de question d'un problème est impair on vote pour une solution, sinon pour une question.
     """
-    try:
-        connexion = sqlite3.connect(database)
-        cursor = connexion.cursor()
-        print("Connexion réussie à SQLite")
-
-        cursor.execute("SELECT count(id) FROM question WHERE pb_parent_id = ?",(pb_parent_id,))
-        parité = cursor.fetchone()[0] % 2
-
-        # count(id) ne peux pas être nul : quand on créé une problématique on demande une première question
-
-        print("Récupération de l'état vote pour question ou solution réussi")
-        cursor.close()
-        connexion.close()
-        print("Connexion SQLite est fermée")
-        if parité == 1:
-            return "vote solution"
-        else:
-            return "vote question"
-    except sqlite3.Error as error:
-        print("Erreur de la récupération de l'état du vote", error)
+    query = "SELECT count(id) FROM question WHERE pb_parent_id = ?"
+    param = (pb_parent_id,)
+    error = "Erreur de la récupération de l'état du vote"
+    parité = basic_query(query, param, error)[0] % 2
+    # count(id) ne peux pas être nul : quand on créé une problématique on demande une première question
+    if parité == 1:
+        return "vote solution"
+    else:
+        return "vote question"
 
 
 def Etend_Branche(titre,utilisateur,question_parent, pb_parent_id) -> None :
@@ -560,21 +553,11 @@ def GetSolutions(id_question : int) -> list:
     """
     On récupère toutes les solutions associé à une question
     """
-    try:
-        connexion = sqlite3.connect(database)
-        cursor = connexion.cursor()
-        print("Connexion réussie à SQLite")
-
-        cursor.execute("SELECT * FROM solutions WHERE question_id = ?",(id_question,))
-        liste_solution = cursor.fetchall()
-        
-        print("Récupération des propositions réussi")
-        cursor.close()
-        connexion.close()
-        print("Connexion SQLite est fermée")
-        return liste_solution
-    except sqlite3.Error as error:
-        print("Erreur lors de la récupération des solutions", error)
+    query = "SELECT * FROM solutions WHERE question_id = ?"
+    param = (id_question,)
+    error = "SELECT * FROM utilisateurs WHERE email=?"
+    liste_solution = basic_query(query, param, error)
+    return liste_solution
 
 def ValidEmail(email :str) -> bool:
     """
@@ -600,23 +583,13 @@ def NotAlreadyRegister(email : str) -> bool:
     Vérifie que l'email passé en paramètre n'est pas déjà dans la base de donnée,
     c'est à dire que personne ne s'est inscrit avec le mail email
     """
-    try:
-        connexion = sqlite3.connect(database)
-        cursor = connexion.cursor()
-        print("Connexion réussie à SQLite")
-
-        cursor.execute("SELECT * FROM utilisateurs WHERE email=?",(email,))
-        utilisateur = cursor.fetchall()
-        
-        b = utilisateur == []
-
-        print("Vérification réussi ="+str(b))
-        cursor.close()
-        connexion.close()
-        print("Connexion SQLite est fermée")
-        return b
-    except sqlite3.Error as error:
-        print("Erreur lors de la vérification que le nouveau mail n'est pas déjà dans la BD", error)
+    query = "SELECT * FROM utilisateurs WHERE email=?"
+    param = (email,)
+    error = "Erreur lors de la vérification que le nouveau mail n'est pas déjà dans la BD"
+    utilisateur = basic_query(query, param, error)
+    b = utilisateur == []
+    print("Vérification réussi ="+str(b))
+    return b
 
 def Register(email : str, name :str, fname: str, password : str):
     """
@@ -638,57 +611,34 @@ def Register(email : str, name :str, fname: str, password : str):
         return 
     except sqlite3.Error as error:
         print("Erreur lors de l'insertion du nouvel utilisateurs", error)
+    
 
 def ValidLogin(email : str, password : str) -> bool:
     """
     Vérifie que le login  donnée existe dans la base de donnée et que le mot de passe correspond. 
     """
-    try:
-        connexion = sqlite3.connect(database)
-        cursor = connexion.cursor()
-        print("Connexion réussie à SQLite")
-
-        cursor.execute("SELECT * FROM utilisateurs WHERE email=?",(email,))
-        user = cursor.fetchone()
-
-        cursor.close()
-        connexion.close()
-        print("Connexion SQLite est fermée")
-
-        if user == None or user==[]:
-            return False
-        print(user)
-
-        if decryptageXOR(user[3])==password:
-            return True
-
+    query = "SELECT * FROM utilisateurs WHERE email=?"
+    param = (email,)
+    error = "Erreur lors de la vérification du login"
+    user = basic_query(query, param, error)
+    if user == None or user==[]:
         return False
-    except sqlite3.Error as error:
-        print("Erreur lors de la vérification du login", error)
+    print(user)
+    if decryptageXOR(user[3])==password:
+        return True
+    return False
 
 def Get_Messages(id_question : int ) -> List:
     """
     Récupère tous les messages associé à une question
     """
-    try:
-        connexion = sqlite3.connect(database)
-        cursor = connexion.cursor()
-        print("Connexion réussie à SQLite")
-
-        print("L'id de la question est " + str(id_question))
-
-        cursor.execute("SELECT * FROM msg WHERE question_id=?",(id_question,))
-        messages = cursor.fetchall()
-
-        print("Il y a "+str(len(messages))+" messages.")
-
-        cursor.close()
-        connexion.close()
-        print("Connexion SQLite est fermée")
-
-        return messages
-    except sqlite3.Error as error:
-        print("Erreur lors de la récupération des messages", error)
+    print("L'id de la question est " + str(id_question))
+    query = "SELECT * FROM msg WHERE question_id=?"
+    param = (id_question,)
+    error = "Erreur lors de la récupération des messages"
+    messages = basic_query(query, param, error)
+    print("Il y a "+str(len(messages))+" messages.")
+    return messages
 
 
 key = "038UTRENDGKFGS43I48302RZIPÖGJDLFM?"
