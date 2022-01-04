@@ -455,12 +455,17 @@ def EnvoieMessage(utilisateur : str,texte : str,question_id : int) -> None :
         print("Erreur lors de l'insertion dans la table message/question", error)
 
 def GetNames(utilisateur):
+    """
+    On récupère le nom et prénom d'un utilisateur à partir de son email
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
         cursor.execute("SELECT nom,prenom FROM utilisateurs WHERE email = ? ",(utilisateur,))
         names = cursor.fetchone()
+
+        # Cette fonction ne peux être appellé que si l'utilisateur est a réussi à se connecter, donc si il est inscrit et qu'il y a bien une ligne dans le schéma user lui correspondant
 
         cursor.close()
         connexion.close()
@@ -473,6 +478,9 @@ def GetNames(utilisateur):
 ## Récupération de données à afficher
 
 def GetProblematiques() -> list:
+    """
+    Récupère la liste de toutes les problématiques
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -490,12 +498,19 @@ def GetProblematiques() -> list:
 
 
 def GetProblematique(id_prob : int) -> list:
+    """
+    Récupère les informations  sur une problématique grâce à son id
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
         cursor.execute("SELECT * FROM pb WHERE id=?",(id_prob,))
         pb = cursor.fetchone()
+
+        if pb == None:
+            print("Erreur, la problématique n'existe pas")
+
         print("Récupération de la problématique")
         cursor.close()
         connexion.close()
@@ -505,6 +520,9 @@ def GetProblematique(id_prob : int) -> list:
         print("Erreur lors de la récupération d'une problématique", error)
 
 def GetQuestions(id_prob : int) -> list:
+    """
+    Récupère les questions successives associées à une problématique
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -514,14 +532,17 @@ def GetQuestions(id_prob : int) -> list:
 
         cursor.execute("SELECT * FROM question WHERE pb_parent_id = ? AND id=question_parent_id ",(id_prob,))
         question = cursor.fetchone()
+
+        # Grâce à l'initialisation, il existe forcément une première question.
+
         liste_questions.append(question)
 
-        b = True
-        while b:
-            cursor.execute("SELECT * FROM question WHERE question_parent_id = ? AND NOT id=question_parent_id", (liste_questions[-1][0],)) # on cherche si la derniere sous proposition a un enfant
+        
+        while True:
+            cursor.execute("SELECT * FROM question WHERE question_parent_id = ? AND NOT id=question_parent_id", (liste_questions[-1][0],)) 
+            # on cherche si la derniere sous proposition a un enfant
             question = cursor.fetchone()
             if question == None:
-                b = False
                 break
             else :
                  liste_questions.append(question)
@@ -536,6 +557,9 @@ def GetQuestions(id_prob : int) -> list:
         print("Erreur lors de la récupération des questions", error)
 
 def GetSolutions(id_question : int) -> list:
+    """
+    On récupère toutes les solutions associé à une question
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -553,11 +577,13 @@ def GetSolutions(id_question : int) -> list:
         print("Erreur lors de la récupération des solutions", error)
 
 def ValidEmail(email :str) -> bool:
-    
+    """
+    On vérifie que le format proposé en email vérifie quelque condition de base:
+    il est de la forme xxx@xxx.fr|eu|com|net
+    """
     if email == "" or email == None:
         return False
 
-    
     email_decomposé = email.split("@")
     if len(email_decomposé) != 2:
         return False
@@ -570,6 +596,10 @@ def ValidEmail(email :str) -> bool:
     return True
 
 def NotAlreadyRegister(email : str) -> bool:
+    """
+    Vérifie que l'email passé en paramètre n'est pas déjà dans la base de donnée,
+    c'est à dire que personne ne s'est inscrit avec le mail email
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -589,6 +619,10 @@ def NotAlreadyRegister(email : str) -> bool:
         print("Erreur lors de la vérification que le nouveau mail n'est pas déjà dans la BD", error)
 
 def Register(email : str, name :str, fname: str, password : str):
+    """
+    Enregistre un nouvelle utilisateur grâce aux paramètre donnée
+    Cette fonction doit être utilisé après avoir appellé la fonction ValidEmail pour vérifié que cet email n'est pas déjà dans la base de donnée
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -606,6 +640,9 @@ def Register(email : str, name :str, fname: str, password : str):
         print("Erreur lors de l'insertion du nouvel utilisateurs", error)
 
 def ValidLogin(email : str, password : str) -> bool:
+    """
+    Vérifie que le login  donnée existe dans la base de donnée et que le mot de passe correspond. 
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -621,7 +658,6 @@ def ValidLogin(email : str, password : str) -> bool:
         if user == None or user==[]:
             return False
         print(user)
-        ## Check password ici
 
         if decryptageXOR(user[3])==password:
             return True
@@ -631,6 +667,9 @@ def ValidLogin(email : str, password : str) -> bool:
         print("Erreur lors de la vérification du login", error)
 
 def Get_Messages(id_question : int ) -> List:
+    """
+    Récupère tous les messages associé à une question
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -654,7 +693,16 @@ def Get_Messages(id_question : int ) -> List:
 
 key = "038UTRENDGKFGS43I48302RZIPÖGJDLFM?"
 
+"""
+
+Fonctions XOR issue d'un projet de première année de CPGE par CHANEL Valentin en collaboration avec FUCHS Léon aux lycée Claude Louis Berthollet
+
+"""
+
 def cryptageXOR(plain_text : str) -> str:
+    """
+    Encrypte un texte grâce à la méthode XOR
+    """
     encrypted_text= ""
     key_itr = 0
     for i in range(len(plain_text)):
@@ -665,7 +713,10 @@ def cryptageXOR(plain_text : str) -> str:
             key_itr=0
     return encrypted_text
 
-def decryptageXOR(encrypted_text : str) -> str: 
+def decryptageXOR(encrypted_text : str) -> str:
+    """
+    Decrypte un texte grâce à la méthode XOR
+    """
     if encrypted_text=="" or encrypted_text == None:
         return ""
 
