@@ -249,7 +249,7 @@ def Get_Voting_For_Solution_or_Question(pb_parent_id) -> int :
     query = "SELECT count(id) FROM question WHERE pb_parent_id = ?"
     param = (pb_parent_id,)
     error = "Erreur de la récupération de l'état du vote"
-    parité = basic_query(query, param, error)[0] % 2
+    parité = basic_query(query, param, error)[0][0] % 2
     # count(id) ne peux pas être nul : quand on créé une problématique on demande une première question
     if parité == 1:
         return "vote solution"
