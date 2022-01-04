@@ -28,9 +28,11 @@
     <div id="{{'-'+choosen_solution[i][0]}}" class="tablo-gagnants-perdants">
         {%for j in every_solution[i]%}
             {% if j[2]==choosen_solution[i][2] %}
-                <p class="choix-gagnant" title="{{j[3]}}">{{j[2]}}&nbsp;{{j[5]}}%</p>
+                <p class="choix-gagnant" title="{{j[3]}}" }}">{{j[2]}}&nbsp;{{j[5]}}%</p>
             {% else %}
-                <p class="choix-perdant" title="{{j[3]}}">{{j[2]}}&nbsp;{{j[5]}}%</p>
+                <p class="choix-perdant" ">{{j[2]}}&nbsp;{{j[5]}}%
+                    <span class="tooltiptext">{{j[3]}}</span>
+                </p>
             {% endif %}
         {%endfor%}
     </div>
