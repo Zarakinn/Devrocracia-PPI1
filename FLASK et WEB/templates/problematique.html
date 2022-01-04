@@ -113,7 +113,13 @@
 
     <div class="chatbox">
         {% for m in messages %}
-        <p class="chat"><span class="mail">{{m[2]}}:<br></span>{{m[1]}}<br><span class="date">{{m[4]}}</span></p>
+        <p class="chat"><span class="mail">{{m[2]}}:<br></span>
+            {% for t in m[1].split("<br>") %} 
+                <!--la chaine est composee de <br> qui ne sont pas reconnu par flask
+                pour des raisons de sécurité, on la recompose donc en python-->
+                {{t}}<br>                
+            {% endfor %}
+            <span class="date">{{m[4]}}</span></p>
         {% endfor %}
     </div>
 

@@ -422,7 +422,7 @@ def break_text(text, char_per_line):
         broke_text += text[:char_per_line]
         broke_text += "<br>"
         text = text[char_per_line+1:]
-        return broke_text
+    return broke_text
 
 def EnvoieMessage(utilisateur : str,texte : str,question_id : int) -> None :
     """
@@ -444,7 +444,7 @@ def EnvoieMessage(utilisateur : str,texte : str,question_id : int) -> None :
         date =cursor.fetchone()
         date=date[0]
 
-        #text = break_text(text, 5)
+        texte = break_text(texte, 120)
 
         sql = "INSERT INTO msg (id,texte,utilisateur_email,question_id,date) VALUES (?, ?, ?, ?,?)"
         donnes=[(new_id,texte,utilisateur,question_id,date)]
