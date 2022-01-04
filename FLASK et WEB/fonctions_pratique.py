@@ -101,8 +101,8 @@ def Get_Solution_Voter_by_User(question_id, user) -> int:
     error = "Erreur lors du vote"
     solution = basic_query(query, param, error)
 
-    if solution != None: 
-        solution = int(solution[0]) #On renvoie uniquement l'id de la solution pour laquelle il a voté
+    if solution != None and solution != []: 
+        solution = int(solution[0][0]) #On renvoie uniquement l'id de la solution pour laquelle il a voté
         
     return solution
 
@@ -416,6 +416,14 @@ def Vote(solution_id, id_question, utilisateur) -> None :
         print("Erreur lors du vote :", error)
         return
 
+def break_text(text, char_per_line):
+    broke_text = ""
+    while len(text) > char_per_line:
+        broke_text += text[:char_per_line]
+        broke_text += "<br>"
+        text = text[char_per_line+1:]
+        return broke_text
+
 def EnvoieMessage(utilisateur : str,texte : str,question_id : int) -> None :
     """
     Envoie un message :
@@ -435,6 +443,8 @@ def EnvoieMessage(utilisateur : str,texte : str,question_id : int) -> None :
         cursor.execute("SELECT CURRENT_TIMESTAMP")
         date =cursor.fetchone()
         date=date[0]
+
+        #text = break_text(text, 5)
 
         sql = "INSERT INTO msg (id,texte,utilisateur_email,question_id,date) VALUES (?, ?, ?, ?,?)"
         donnes=[(new_id,texte,utilisateur,question_id,date)]
@@ -624,7 +634,7 @@ def ValidLogin(email : str, password : str) -> bool:
     if user == None or user==[]:
         return False
     print(user)
-    if decryptageXOR(user[3])==password:
+    if decryptageXOR(user[0][3])==password:
         return True
     return False
 
