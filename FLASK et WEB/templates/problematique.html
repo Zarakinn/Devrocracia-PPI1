@@ -74,28 +74,21 @@
             {%endfor%}
 
 
-
-
-    {% if showform %}
-        {% if session.mail %}
-            <a class="choix" href="/problematique/{{prob[0]}}">+</a>
-            <form class="form_new_pb" method ="POST">
-                <input autocomplete="off" autofocus name="new_prop_title" placeholder="nom de la nouvelle proposition" type="text">
-                <input autocomplete="off" name="new_prop_desc" placeholder="description de la proposition" type="text">
-                <input type="submit" value="Soumettre">
-            </form>
-        {% else %}
-            <a class="tronc">+</a>
-            <p> Tu dois te connecter pour ajouter une Problématiques</p>
-        {% endif %}
-    {% elif not(etat=="backtracking") %}
-        <a class="choix" tittle="Ajoute une proposition" href="/problematique/{{prob[0]}}?showform=True">+</a>
-    {% endif %}
-
-
-
-
-            
+            {% if showform %}
+                {% if session.mail %}
+                    <a class="choix" href="/problematique/{{prob[0]}}">+</a>
+                    <form class="form_new_pb" method ="POST">
+                        <input autocomplete="off" autofocus name="new_prop_title" placeholder="nom de la nouvelle proposition" type="text">
+                        <input autocomplete="off" name="new_prop_desc" placeholder="description de la proposition" type="text">
+                        <input type="submit" value="Soumettre">
+                    </form>
+                {% else %}
+                    <a class="tronc">+</a>
+                    <p> Tu dois te connecter pour ajouter une Problématiques</p>
+                {% endif %}
+            {% elif not(etat=="backtracking") %}
+                <a class="choix" tittle="Ajoute une proposition" href="/problematique/{{prob[0]}}?showform=True">+</a>
+            {% endif %}    
         </div>
 
         <a href="/problematique/{{prob[0]}}?cloture=True"><br />Cloture des votes (expérimental)</a>
