@@ -67,7 +67,7 @@ div.tablo-choix{
 div.tablo-gagnants-perdants{
 	display: none;
     grid-template-columns: auto auto auto auto;
-	margin: 30px;
+	margin: 30px 0px 0px 0px;
 }
 
 .choix{
@@ -177,7 +177,7 @@ div.tablo-gagnants-perdants{
 }
 
 .date{
-	color:white;
+	color:#3e474c;
 	font-size:16px;
 }
 
