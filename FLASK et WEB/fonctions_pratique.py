@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from logging import fatal
+from logging import fatal, raiseExceptions
 from re import U
 import sqlite3
 from typing import List
@@ -594,7 +594,46 @@ def Get_Messages(id_question : int ) -> List:
     return messages
 
 
-key = "038UTRENDGKFGS43I48302RZIPÖGJDLFM?"
+def GetKey():
+    with open("key.txt") as file :
+        temp = file.read()
+        if len(temp) > 5:
+            return temp
+        else :
+            raiseExceptions("Impossible de lire la clef")
+
+key = GetKey()
+##print("key = " + key)
+def ChangeKey(new_key): 
+    try :
+
+        for carac in new_key:
+            if not carac in "abcedfghijklmnopqrstuvwzyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890":
+                raiseExceptions("Clef non valide, accepte seulement lettre et chiffre")
+                return
+
+        connexion = sqlite3.connect(database)
+        cursor = connexion.cursor()
+
+
+        cursor.execute("SELECT * FROM utilisateurs")
+        users = cursor.fetchall()
+
+        for u in users:
+            plain_mdp = decryptageXOR(u[3])
+            new_mdp = cryptageXOR(plain_mdp,new_key)
+            cursor.execute("UPDATE utilisateurs SET mdp = ? WHERE email = ?", (new_mdp,u[0]))
+
+        connexion.commit()
+        cursor.close()
+        connexion.close()
+
+        with open("key.txt",'w') as file :
+            file.write(new_key)
+            return
+    except sqlite3.Error as error:
+        print("Erreur lors de l'insertion du nouvel utilisateurs", error)
+    
 
 """
 
@@ -602,7 +641,7 @@ Fonctions XOR issue d'un projet de première année de CPGE par CHANEL Valentin 
 
 """
 
-def cryptageXOR(plain_text : str) -> str:
+def cryptageXOR(plain_text : str, key = key) -> str:
     """
     Encrypte un texte grâce à la méthode XOR
     """
@@ -616,7 +655,7 @@ def cryptageXOR(plain_text : str) -> str:
             key_itr=0
     return encrypted_text
 
-def decryptageXOR(encrypted_text : str) -> str:
+def decryptageXOR(encrypted_text : str, key = key) -> str:
     """
     Decrypte un texte grâce à la méthode XOR
     """
