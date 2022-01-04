@@ -44,11 +44,21 @@ def problematique(id_prob):
         raise "il n'y pas de question associé, mauvaise initialisation"
     last_question = questions[-1]
 
+
     if request.method == "POST":
-        texte = request.form.get("message")
-        print("envoie le msg :" + texte)
-        fonctions_pratique.EnvoieMessage(session["mail"],texte,last_question[0])
-        return redirect("/problematique/"+str(id_prob))
+        #ajout de message
+        texte = request.form.get("message") 
+        if texte != None:
+            print("envoie le msg :" + texte)
+            fonctions_pratique.EnvoieMessage(session["mail"],texte,last_question[0])
+            return redirect("/problematique/"+str(id_prob))
+        #Ajout de proposition
+        new_prop_title = request.form.get("new_prop_title")
+        new_prop_desc = request.form.get("new_prop_desc")
+        if new_prop_title != None and new_prop_desc != None:
+            id_question = last_question[0]
+            fonctions_pratique.Creation_Solution(id_question,new_prop_title,new_prop_desc)
+            return redirect("/problematique/"+str(id_prob))    
 
     possible_solutions = fonctions_pratique.GetSolutions(last_question[0])
     messages = fonctions_pratique.Get_Messages(last_question[0])
@@ -113,8 +123,6 @@ def problematique(id_prob):
             fonctions_pratique.do_backtracking(backtrack_to, id_prob)
             return redirect(redirect_to)
         elif most_voted_solution_texte == "Backtracking":
-            print("bacc")
-            show_where_return = True
             fonctions_pratique.init_backtracking_vote(id_prob, last_question[0], all_choosen_solutions)
             return redirect(redirect_to)
         elif etat == "vote solution":
@@ -140,7 +148,7 @@ def problematique(id_prob):
     
     print(etat)
     print("incr_etat = " + str(incr_etat))
-        
+
     return render_template( #il faut homogeniser tous les s en fin de variables
         'problematique.html',
         prob = prob,
@@ -157,7 +165,8 @@ def problematique(id_prob):
         message_vote = message_vote,
         messages = messages,
         incr_etat = incr_etat,
-        etat=etat
+        etat=etat,
+        showform=request.args.get("showform")
         )
 
 
