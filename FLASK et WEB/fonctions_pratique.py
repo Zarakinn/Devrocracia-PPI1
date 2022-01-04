@@ -9,7 +9,9 @@ database = "data/database.db"
 
 
 def Creation_Problemes(titre,description,question_titre,utilisateur) -> None :
-    """calcule de la date, d’un id unique et création d’une ligne dans le schéma problématique et question associée"""
+    """
+    Cette fonction a pour but de créer un nouveau problème, pour cela on calcule la date, un nouvel id unique et on créé une ligne dans les schéma problématique et question
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -21,8 +23,8 @@ def Creation_Problemes(titre,description,question_titre,utilisateur) -> None :
 
         cursor.execute("SELECT max(id) FROM pb ")
         new_pb_id=cursor.fetchone()
-        print(new_pb_id)
-        if new_pb_id==(None,):
+        
+        if new_pb_id==(None,): # Si il n'y a pas encore de problème, max(id) renvoie None : on catch l'erreur et on résoud le problème
             new_pb_id=[0]
         new_pb_id=new_pb_id[0]+1
 
@@ -33,7 +35,7 @@ def Creation_Problemes(titre,description,question_titre,utilisateur) -> None :
 
         cursor.execute("SELECT max(id) FROM question ")
         new_question_id=cursor.fetchone()
-        if new_question_id==(None,):
+        if new_question_id==(None,): # Si il n'y a pas encore de question, max(id) renvoie None : on catch l'erreur et on résoud le problème
             new_question_id=[0]
         new_question_id=new_question_id[0]+1
 
@@ -51,7 +53,9 @@ def Creation_Problemes(titre,description,question_titre,utilisateur) -> None :
     
 
 def Creation_Solution(question_id,titre,description) -> None :
-    """ajoute une solution pour une question"""
+    """
+    Pour une question donnée identifié par question_id, on ajoute une proposition à partir des paramètres données et d'autres que l'on calcul tel que la date, un id ...
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -59,7 +63,7 @@ def Creation_Solution(question_id,titre,description) -> None :
 
         cursor.execute("SELECT max(id) FROM solutions ")
         new_id=cursor.fetchone()
-        if new_id==(None,):
+        if new_id==(None,): # Si il n'y a pas encore de solution, max(id) renvoie None : on catch l'erreur et on résoud le problème
             new_id = [0]
         new_id = new_id[0] + 1
 
@@ -76,6 +80,9 @@ def Creation_Solution(question_id,titre,description) -> None :
         print("Erreur lors de l'insertion dans la table solutions", error)
 
 def Get_Solution_Voter_by_User(question_id, user) -> int:
+    """
+    On essaie de trouver si l'utilisateur passer en paramètre a déjà voté pour le choix identifié par question_id. Si c'est le cas, on renvoi son choixi sinon on renvoie None
+    """
     try:
         #removing previous vote
         connexion = sqlite3.connect(database)
@@ -83,8 +90,8 @@ def Get_Solution_Voter_by_User(question_id, user) -> int:
 
         cursor.execute("SELECT solution_id FROM votes WHERE utilisateur_email = ? AND question_id =?",(user,question_id))
         solution = cursor.fetchone()
-        if solution != None:
-            solution = int(solution[0])
+        if solution != None: 
+            solution = int(solution[0]) #On renvoie uniquement l'id de la solution pour laquelle il a voté
             
         cursor.close()
         connexion.close()
@@ -96,9 +103,10 @@ def Get_Solution_Voter_by_User(question_id, user) -> int:
         return
 
 
-
 def Get_Most_Voted_Solution(question_id) -> int :
-    """cherche toutes les solutions associées à la question, retourne celle qui à le plus de vote"""
+    """
+    Cherche toutes les solutions associées à la question, retourne celle qui à le plus de vote
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -106,9 +114,14 @@ def Get_Most_Voted_Solution(question_id) -> int :
         cursor.execute("SELECT max(nb_vote) FROM solutions WHERE question_id=? ",(question_id,))
         nb_vote_max=cursor.fetchone()
         nb_vote_max=nb_vote_max[0]
+
+        # Ici, grâce à la structure qu'on a choisi, il y a toujours la solution "backtracking" ce qui assure qu'il n'y a pas de problème
+
         #print("Le maximum de vote est " + str(nb_vote_max))
         cursor.execute("SELECT * FROM solutions WHERE question_id=? AND nb_vote=? ", (question_id,nb_vote_max))
-        best_solution=cursor.fetchone()
+        best_solution=cursor.fetchone() 
+        
+        # Si deux solutions on le même nombre de votes, on en choisit un arbitrairement 
 
         cursor.close()
         connexion.close()
@@ -118,6 +131,9 @@ def Get_Most_Voted_Solution(question_id) -> int :
         print("Erreur lors de la récupération de la solution la plus voté", error)
 
 def Get_Choosen_Solution(questions : list) -> list:
+    """
+    On souhaite récupérer la liste de toutes les solutions qui ont été choisit dans cette problématique lors des choix précédents
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -128,9 +144,15 @@ def Get_Choosen_Solution(questions : list) -> list:
             cursor.execute("SELECT max(nb_vote) FROM solutions WHERE question_id=? ",(q[0],))
             nb_vote_max=cursor.fetchone()
             nb_vote_max=nb_vote_max[0]
+
+            # Ici, grâce à la structure qu'on a choisi, il y a toujours la solution "backtracking" ce qui assure qu'il n'y a pas de problème
+
             #print("Le maximum de vote est " + str(nb_vote_max))
             cursor.execute("SELECT * FROM solutions WHERE question_id=? AND nb_vote=? ", (q[0],nb_vote_max))
             best_solution=cursor.fetchone()
+
+            # Si deux solutions on le même nombre de votes, on en choisit un arbitrairement 
+
             choosen_solutions.append(best_solution)
     
         cursor.close()
@@ -142,7 +164,9 @@ def Get_Choosen_Solution(questions : list) -> list:
 
 
 def GetAllSolutions(choosen_question:list):
-    #L'argument choosen_question est une liste de question
+    """
+    On souhaite récupérer la liste de toutes les solutions qui ont été proposé dans cette problématique, pour cela on part de la liste des questions qui ont été posé
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -163,7 +187,10 @@ def GetAllSolutions(choosen_question:list):
         print("Erreur lors de la récupération de toutes les solutions :",error)
 
 def GetAllQuestions(choosen_question : list):
-    ## celle dont le parent a pour titre NextQuestionString
+    """
+    On souhaite récupérer les questions qui ont été choisi par les utilisateurs, grâce à notre structure  on sait que le parent à le string de ces fonctions 
+    a pour titre la variable NextQuestionString
+    """
     try :
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -181,13 +208,15 @@ def GetAllQuestions(choosen_question : list):
         cursor.close()
         connexion.close()
         print("Récupération de toutes les questions effectués")
-        print(all_questions)
         return all_questions
     except sqlite3.Error as error:
         print("Erreur lors de la récupération de toutes les questions :",error)
 
 def Get_Voting_For_Solution_or_Question(pb_parent_id) -> int :
-    """Si le nombre de question d'un problème est impair on vote pour une solution, sinon pour une question."""
+    """
+    On souhaite savoir si on est dans un choix de question ou un choix de solution. On utilise à notre avantage la structure de nos données :
+    si le nombre de question d'un problème est impair on vote pour une solution, sinon pour une question.
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -195,6 +224,8 @@ def Get_Voting_For_Solution_or_Question(pb_parent_id) -> int :
 
         cursor.execute("SELECT count(id) FROM question WHERE pb_parent_id = ?",(pb_parent_id,))
         parité = cursor.fetchone()[0] % 2
+
+        # count(id) ne peux pas être nul : quand on créé une problématique on demande une première question
 
         print("Récupération de l'état vote pour question ou solution réussi")
         cursor.close()
@@ -209,8 +240,12 @@ def Get_Voting_For_Solution_or_Question(pb_parent_id) -> int :
 
 
 def Etend_Branche(titre,utilisateur,question_parent, pb_parent_id) -> None :
-    """créé une nouvelle question en fonction de la solution choisit, créé les données associé dans la base de données 
-    -> le en fonction de la solution à besoin d'une fonction pour savoir qui a eu le plus de vote"""
+    """
+    Fonction appellé lors de la clotûre d'un vote, elle doit:
+    -> récupérer le choix ayant eu le plus de vote
+    -> créer une question en fonction de ce choix
+    -> ajouter comme solution le backtracking 
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -249,7 +284,9 @@ def Etend_Branche(titre,utilisateur,question_parent, pb_parent_id) -> None :
 
 
 def init_backtracking_vote(pb_parent_id, question_parent_id, solution_list) -> None :
-    """Ajoute "backtracking" en tant que nouvelle solution et tous les points de retour possibles en solutions"""
+    """
+    Ajoute "backtracking" en tant que nouvelle question et tous les points de retour possibles en solutions
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
@@ -281,7 +318,6 @@ def init_backtracking_vote(pb_parent_id, question_parent_id, solution_list) -> N
             cursor.executemany(sql, donnees)
                 
         connexion.commit()
-        print("init_backtracking_vote erreur")
         cursor.close()
         connexion.close()
         print("Connexion SQLite est fermée")
@@ -291,16 +327,21 @@ def init_backtracking_vote(pb_parent_id, question_parent_id, solution_list) -> N
 
 
 def do_backtracking(backtrack_to_id, pb_parent_id) -> None :
-    """Coupe toutes les questions postérieures à celle où on backtrack et réimplente la question en question""" 
+    """
+    Coupe toutes les questions postérieures à celle où on backtrack et réimplente la question en question
+    """ 
     try:
-        print("___do BACKTRACKIGN")
+        print("___DO BACKTRACKING___")
         print(backtrack_to_id, pb_parent_id)
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
         print("Connexion réussie à SQLite")
 
         cursor.execute("SELECT max(id) FROM question")
-        new_id_question=cursor.fetchone()[0]+1
+        new_id_question=cursor.fetchone()
+        if new_id_question==None:
+            new_id_question=[0]
+        new_id_question=new_id_question[0]+1
 
         #Coupage
         cursor.execute("UPDATE question SET branche_morte = 1 WHERE pb_parent_id = ? AND id > ?", (pb_parent_id, backtrack_to_id))
@@ -323,7 +364,9 @@ def do_backtracking(backtrack_to_id, pb_parent_id) -> None :
         print("do_backtracking echec", error)
 
 def Vote(solution_id, id_question, utilisateur) -> None :
-    """vérifie contrainte d’intégrité, éligibilité aux votes et change compte de vote"""
+    """
+    Enregistre le vote d'un utilisateur, vérifie qu'elle n'a pas déjà voté. Si c'est le cas, on supprime son ancien vote.
+    """
     try:
     #removing previous vote
         connexion = sqlite3.connect(database)
@@ -356,7 +399,10 @@ def Vote(solution_id, id_question, utilisateur) -> None :
         return
 
 def EnvoieMessage(utilisateur : str,texte : str,question_id : int) -> None :
-    """créé une ligne dans le schéma message, l’associe à la question"""
+    """
+    Envoie un message :
+    Créé une ligne dans le schéma message et l’associe à la question
+    """
     try:
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
