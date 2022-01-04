@@ -176,6 +176,18 @@ def GetAllSolutions(choosen_question:list):
         for q in choosen_question:
             cursor.execute("SELECT * FROM solutions WHERE question_id=?",(q[0],))
             solutions = cursor.fetchall() #liste de solutions proposé pour la question q
+
+            nb_total_vote=0
+            for s in solutions:
+                nb_total_vote+=s[4]
+            if nb_total_vote==0:
+                nb_total_vote=1
+            for i,s in enumerate(solutions):
+                s=list(s)
+                s.append(int((s[4]/nb_total_vote)*10000)/100)
+                s=tuple(s)
+                solutions[i]=s
+
             all_solutions.append(solutions)
 
         print("Récupération de toutes les solutions réussi, il y en a = " + str(len(all_solutions)))
@@ -203,6 +215,19 @@ def GetAllQuestions(choosen_question : list):
 
             cursor.execute("SELECT * FROM solutions WHERE question_id=?",(choosen_question[i][4],)) # question avec le meme choix parent
             questions = cursor.fetchall()
+
+            nb_total_vote=0
+            for q in questions:
+                nb_total_vote+=q[4]
+            if nb_total_vote==0:
+                nb_total_vote=1
+
+            for i,q in enumerate(questions):
+                q=list(q)
+                q.append(int((q[4]/nb_total_vote)*10000)/100)
+                q=tuple(q)
+                questions[i]=q
+
             all_questions.append(questions)
         
         cursor.close()
