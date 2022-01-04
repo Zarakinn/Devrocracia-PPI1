@@ -5,7 +5,7 @@
 <body>
     <h1>Liste des problematiques</h1>
     {%for i in range(0,len)%}
-        <a href = '/problematique/{{liste_prob[i][0]}}' class='prob-button'>{{liste_prob[i][2]}}</a>
+        <a href = '/problematique/{{liste_prob[i][0]}}' title="{{liste_prob[i][3]}}" class='prob-button'>{{liste_prob[i][2]}}</a>
     {%endfor%}
 
     {% if showform %}
