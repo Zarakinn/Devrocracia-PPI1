@@ -67,7 +67,7 @@ def test_right():
     sum_per=0
     for sam in t6:
         sum_per+=sam[5]
-    assert abs(100-sum_per) < 0.1 + len(t6)*0.02 # Vérifie que la somme des pourcentage est proche de 100% dans la limite d'une approximation
+    assert abs(100-sum_per) < 0 + len(t6)*0.01 # Vérifie que la somme des pourcentage est proche de 100% dans la limite d'une approximation
 
 if __name__ == "__main__":
    pytest.main([__file__, "-k", "test_", "-v", "-s"])
