@@ -4,7 +4,7 @@
 {% block header %}
 
     <h1>{{prob[2]}}</h1>
-    {% for i in range(0,len_question-incr_etat) %}
+    {% for i in range(0,len_question-incr_etat) %} <!--Affiche toutes les questions/solutions déjà votées-->
 
     <div class="tablo-question-solution">
         <button id="{{chosen_questions[i][0]}}" class="question-button" onclick="show_hide(this.id,'{{chosen_solutions[i][0]}}')">
@@ -17,7 +17,7 @@
     </div>
 
 
-    <div id="{{'-'+chosen_questions[i][0]}}" class="tablo-gagnants-perdants">
+    <div id="{{'-'+chosen_questions[i][0]}}" class="tablo-gagnants-perdants"> <!--sous tableau des questions qui montre la gagnante et les perdantes avec leurs pourcentages-->
         {%if i!=0%}
         {%for j in every_questions[i]%}
             {% if j[2]==chosen_questions[i][2] %}
@@ -30,14 +30,14 @@
     </div>
 
     
-    <div id="{{'-'+chosen_solutions[i][0]}}" class="tablo-gagnants-perdants">
+    <div id="{{'-'+chosen_solutions[i][0]}}" class="tablo-gagnants-perdants"> <!--sous tableau des solutions qui montre la gagnante et les perdantes avec leurs pourcentages-->
         {%for j in every_solutions[i]%}
             {% if j[2]==chosen_solutions[i][2] %}
-                <p class="choix-gagnant tooltip"}}">{{j[2]}}&nbsp;{{j[5]}}%
-                    <span class="tooltiptext">{{j[3]}}</span>
+                <p class="choix-gagnant tooltip">{{j[2]}}&nbsp;{{j[5]}}%
+                    <span class="tooltiptext">{{j[3]}}</span> <!--description de la solution en tooltip-->
                 </p>
             {% else %}
-                <p class="choix-perdant tooltip" ">{{j[2]}}&nbsp;{{j[5]}}%
+                <p class="choix-perdant tooltip">{{j[2]}}&nbsp;{{j[5]}}%
                     <span class="tooltiptext">{{j[3]}}</span>
                 </p>
             {% endif %}
@@ -66,18 +66,18 @@
     </script>
   
 
-
+    <!--Ici s'affichent les questions/solutions en phase de vote-->
     <!--On affiche pas les solutions suivantes ni le bouton si la problématique est résolue-->
     {% if  chosen_solutions == [] or
         (chosen_solutions != [] and
         not chosen_solutions[-1][2] == "La problématique est résolue" and
         not chosen_questions[-1][2] == "La problématique est résolue") %}
         <div class="tablo-question-solution">
-            <button class="question-button-only">{{last_question[2]}}</button> 
+            <button class="question-button-only">{{last_question[2]}}</button> <!--cas où on est en phase question-->
         </div>
         <h2>{{message_vote}}</h2>
-        {% if session.mail %}
-            <div class="tablo-choix">
+        {% if session.mail %} <!--test si l'utilisateur est connecté-->
+            <div class="tablo-choix"> <!--tableau qui affiche les questions/solutions qui peuvent etre votées-->
                 {% for j in possible_solutions %}
                     {% if j[0]==voted_solution %}
                         <a class="choisi tooltip" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}
