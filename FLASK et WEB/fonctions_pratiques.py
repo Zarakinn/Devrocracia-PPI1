@@ -3,6 +3,9 @@ from logging import fatal, raiseExceptions
 from re import U
 import sqlite3
 from typing import List
+import string
+alphabet = string.ascii_letters + string.digits
+hexa="0123456789abcdef"
 database = "data/database.db"
 
 def Basic_Query(sql, param_sql, error_msg):
@@ -161,7 +164,8 @@ def Ajout_pourcentage_vote(choix : list ) -> list:
     """
     Prend une liste de solutions à une même question sous la forme d'une liste de tuple, et renvoie cette même liste en rajoutant le pourcentage de votes ce chaque solution à la fin 
     """
-    assert len(choix) > 0, "erreur, il n'y a pas de choix"
+    if len(choix)==0:
+        return []
     for c in choix:
         assert type(c)==tuple, "un des choix n'est pas sous la forme de tuples"
         assert len(c)==5, "un choix n'est pas de taille 5"
@@ -625,7 +629,7 @@ def ChangeKey(new_key):
     try :
 
         for carac in new_key:
-            if not carac in "abcedfghijklmnopqrstuvwzyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890":
+            if not carac in alphabet:
                 raiseExceptions("Clef non valide, accepte seulement lettre et chiffre")
                 return
 
@@ -658,10 +662,16 @@ Fonctions XOR issue d'un projet de première année de CPGE par CHANEL Valentin 
 
 """
 
-def cryptageXOR(plain_text : str, key = key) -> str:
+def cryptageXOR(plain_text : str, key : str = key ) -> str:
     """
     Encrypte un texte grâce à la méthode XOR
     """
+    assert type(plain_text) == type(key) == str, "Le texte ou la clef n'est pas un texte"
+    for carac in key:
+            assert carac in alphabet,"Clef ne contenant pas que des chiffres et lettres sans accent"
+            
+    assert key != "" and key != None, "clef vide"
+    
     encrypted_text= ""
     key_itr = 0
     for i in range(len(plain_text)):
@@ -676,6 +686,15 @@ def decryptageXOR(encrypted_text : str, key = key) -> str:
     """
     Decrypte un texte grâce à la méthode XOR
     """
+    assert type(encrypted_text) == type(key) == str, "Le texte ou la clef n'est pas un texte"
+    assert key != "" and key != None, "clef vide"
+    for carac in key:
+            assert carac in alphabet,"Clef ne contenant pas que des chiffres et lettres sans accent"
+    for carac in encrypted_text:
+            assert carac in hexa,"Texte ne contenant pas que de l'hexadécimal"
+    assert len(encrypted_text%2)==0,"Texte encrypté de longueur impair"
+            
+
     if encrypted_text=="" or encrypted_text == None:
         return ""
 
