@@ -1,18 +1,18 @@
 import pytest,random
-from fonctions_pratiques import ValidEmail
+from fonctions_pratiques import Valid_Email
 
 def test_should_ValidEmail():
-    assert ValidEmail('thomas.pallet@telecomancy.eu') == True
-    assert ValidEmail('') == False
-    assert ValidEmail('@.com') == False
-    assert ValidEmail('.@com') == False
-    assert ValidEmail('_@_.fr') == True
-    assert ValidEmail('_@_.eu') == True
-    assert ValidEmail('_@_.com') == True
-    assert ValidEmail('_@_.net') == True
-    assert ValidEmail('_@_.en') == False 
-    assert ValidEmail('?@?.en') == False 
-    assert ValidEmail('*$.com') == False
+    assert Valid_Email('thomas.pallet@telecomancy.eu') == True
+    assert Valid_Email('') == False
+    assert Valid_Email('@.com') == False
+    assert Valid_Email('.@com') == False
+    assert Valid_Email('_@_.fr') == True
+    assert Valid_Email('_@_.eu') == True
+    assert Valid_Email('_@_.com') == True
+    assert Valid_Email('_@_.net') == True
+    assert Valid_Email('_@_.en') == False 
+    assert Valid_Email('?@?.en') == False 
+    assert Valid_Email('*$.com') == False
     
 
 
