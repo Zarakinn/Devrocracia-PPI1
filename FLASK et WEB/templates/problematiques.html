@@ -4,13 +4,13 @@
 
 <body>
     <h1>Liste des problématiques</h1>
-    {%for i in range(0,len)%}
+    {%for i in range(0,len)%} <!--Affiche toutes les problématiques posées-->
         <a href = '/problematique/{{liste_prob[i][0]}}' class='prob-button tooltip'>{{liste_prob[i][2]}}
             <span class="tooltiptext">{{liste_prob[i][3]}}</span>
         </a>
     {%endfor%}
 
-    {% if showform %}
+    {% if showform %} <!--possibilité d'en rajouter si on est connecté-->
         {% if session.mail %}
         <a class="tronc" href="/problematiques?">+</a>
         <form class="form_new_pb" method ="POST">
