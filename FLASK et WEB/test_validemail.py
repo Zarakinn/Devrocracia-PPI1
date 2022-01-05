@@ -1,6 +1,10 @@
 import pytest,random
 from fonctions_pratiques import Valid_Email
 
+def test_type():
+    with pytest.raises(Exception, match="L'argument n'est pas un string"):
+        assert Valid_Email(666)
+
 def test_should_ValidEmail():
     assert Valid_Email('thomas.pallet@telecomancy.eu') == True
     assert Valid_Email('') == False
