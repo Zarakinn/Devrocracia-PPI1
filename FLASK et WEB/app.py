@@ -59,7 +59,8 @@ def problematique(id_prob):
         #Ajout de proposition
         new_prop_title = request.form.get("new_prop_title")
         new_prop_desc = request.form.get("new_prop_desc")
-        if new_prop_title != None and new_prop_desc != None:
+        #une proposition au titre "La problématique est résolue serait un moyen frauduleux d'archiver la problématique"
+        if new_prop_title != None and new_prop_desc != None and not new_prop_title == "La problématique est résolue":
             id_question = last_question[0]
             fonctions_pratiques.Creation_Solution(id_question,new_prop_title,new_prop_desc)
             return redirect("/problematique/"+str(id_prob))    
@@ -94,8 +95,6 @@ def problematique(id_prob):
     print("Possible solution")
     print(possible_solutions)
     
-    #encre rafraichissemnt de page a faire
-
     #Spécifique au vote
     vote_id = request.args.get("id")
     if vote_id != None and session["mail"]!= None:
@@ -105,7 +104,7 @@ def problematique(id_prob):
     #Différenciation de la page selon si l'on vote pour la prochaine question ou pour la prochaine solution
     etat = fonctions_pratiques.Get_Voting_For_Solution_or_Question(id_prob)
     if all_chosen_solutions != [] and all_chosen_solutions[-1][2] == "Backtracking":
-        message_vote = "Votez pour la solution à laquelle retourner. (backtracking)"
+        message_vote = "Votez pour la solution la plus lointaine à invalider."
         etat="backtracking"
     elif etat == "vote solution":
         message_vote = "Votez pour une solution ou proposez-en une nouvelle."

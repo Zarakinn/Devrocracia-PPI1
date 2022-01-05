@@ -7,9 +7,8 @@
     {% for i in range(0,len_question-incr_etat) %}
 
     <div class="tablo-question-solution">
-        <button id="{{chosen_questions[i][0]}}" class="question-button tooltip" onclick="show_hide(this.id,'{{chosen_solutions[i][0]}}')">
+        <button id="{{chosen_questions[i][0]}}" class="question-button" onclick="show_hide(this.id,'{{chosen_solutions[i][0]}}')">
             {{chosen_questions[i][2]}}
-            <span class="tooltiptext">{{chosen_questions[i][3]}}</span>
         </button>
         <button id="{{chosen_solutions[i][0]}}" class="solution-button tooltip" onclick="show_hide(this.id,'{{chosen_questions[i][0]}}')">
             {{chosen_solutions[i][2]}}
@@ -67,56 +66,62 @@
     </script>
   
 
-    <div class="tablo-question-solution">
-        <button class="question-button-only">{{last_question[2]}}</button> <!--il faut un moyen de savoir si on est dans un cas : vote de question ou vote de solution-->
-    </div>
 
-    <h2>{{message_vote}}</h2>
-
-    {% if session.mail %}
-        <div class="tablo-choix">
-            {% for j in possible_solutions %}
-                {% if j[0]==voted_solution %}
-                    <a class="choisi tooltip" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}
-                        <span class="tooltiptext">{{j[3]}}</span>
-                    </a> 
-                {% else %}
-                    <a class="choix tooltip" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}
-                        <span class="tooltiptext">{{j[3]}}</span>
-                    </a>
-                {% endif %}
-            {%endfor%}
-
-
-            {% if showform %}
-                {% if session.mail %}
-                    <a class="choix" href="/problematique/{{prob[0]}}">+</a>
-                    <form class="form_new_pb" method ="POST">
-                        <input autocomplete="off" autofocus name="new_prop_title" placeholder="nom de la nouvelle proposition" type="text">
-                        <input autocomplete="off" name="new_prop_desc" placeholder="description de la proposition" type="text">
-                        <input type="submit" value="Soumettre">
-                    </form>
-                {% else %}
-                    <a class="tronc">+</a>
-                    <p> Tu dois te connecter pour ajouter une Problématiques</p>
-                {% endif %}
-            {% elif not(etat=="backtracking") %}
-                <a class="choix" tittle="Ajoute une proposition" href="/problematique/{{prob[0]}}?showform=True">+</a>
-            {% endif %}    
+    <!--On affiche pas les solutions suivantes ni le bouton si la problématique est résolue-->
+    {% if  chosen_solutions == [] or
+        (chosen_solutions != [] and
+        not chosen_solutions[-1][2] == "La problématique est résolue" and
+        not chosen_questions[-1][2] == "La problématique est résolue") %}
+        <div class="tablo-question-solution">
+            <button class="question-button-only">{{last_question[2]}}</button> 
         </div>
+        <h2>{{message_vote}}</h2>
+        {% if session.mail %}
+            <div class="tablo-choix">
+                {% for j in possible_solutions %}
+                    {% if j[0]==voted_solution %}
+                        <a class="choisi tooltip" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}
+                            <span class="tooltiptext">{{j[3]}}</span>
+                        </a> 
+                    {% else %}
+                        <a class="choix tooltip" href="/problematique/{{prob[0]}}?id={{j[0]}}">{{j[2]}}
+                            <span class="tooltiptext">{{j[3]}}</span>
+                        </a>
+                    {% endif %}
+                {%endfor%}
 
-        <a href="/problematique/{{prob[0]}}?cloture=True"><br />Cloture des votes (expérimental)</a>
 
-    {%else %}
-        <div class="tablo-choix">
-            {% for j in possible_solutions%}
-                <a class="choix">{{j[2]}}</a>
-            {%endfor%}
-        </div>
+                {% if showform %}
+                    {% if session.mail %}
+                        <a class="choix" href="/problematique/{{prob[0]}}">+</a>
+                        <form class="form_new_pb" method ="POST">
+                            <input autocomplete="off" autofocus name="new_prop_title" placeholder="nom de la nouvelle proposition" type="text">
+                            <input autocomplete="off" name="new_prop_desc" placeholder="description de la proposition" type="text">
+                            <input type="submit" value="Soumettre">
+                        </form>
+                    {% else %}
+                        <a class="tronc">+</a>
+                        <p> Tu dois te connecter pour ajouter une Problématique</p>
+                    {% endif %}
+                {% elif not(etat=="backtracking") %}
+                    <a class="choix" tittle="Ajoute une proposition" href="/problematique/{{prob[0]}}?showform=True">+</a>
+                {% endif %}    
+            </div>
 
-        <h2>Connecte-toi pour ajouter des solutions, envoyer des messages ou voter</h2>
+            <a href="/problematique/{{prob[0]}}?cloture=True"><br />Cloture des votes (expérimental)</a>
+
+        {%else %}
+            <div class="tablo-choix">
+                {% for j in possible_solutions%}
+                    <a class="choix">{{j[2]}}</a>
+                {%endfor%}
+            </div>
+
+            <h2>Connectes-toi pour ajouter des solutions, envoyer des messages ou voter</h2>
+        {% endif %}
+    {% else %}
+        <h2>La problématique est résolue et archivée. Joli travail !</h2>
     {% endif %}
-
     
     {% if session.mail %}
     <form class="form_new_msg" method ="POST">
