@@ -119,32 +119,48 @@ div.tablo-gagnants-perdants{
     border-radius: 15px;
 	margin:20px auto 0px auto;
 	cursor:pointer;
-
-	position:relative;
-	display:inline-block;
-	border-bottom: 1px dotted black
 }
 
-  .choix-perdant .tooltiptext {
+.tooltip{
+	position:relative;
+	display:inline-block;
+}
+
+.tooltiptext {
 	visibility: hidden;
-	width: 400px;
- 	top: 80%;
- 	left: 50%;
- 	margin-left: -200px; /* Use half of the width to center the tooltip */
+	left: 50%;
+	top:100%;
+	width: max-content;
+	overflow-wrap: break-word;
+	max-width: 400px;
+	transform: translate(-50%, 0);
 	background-color: purple;
 	color: #fff;
 	text-align: center;
 	padding: 5px 0;
 	border-radius: 6px;
-	font-size:smaller;
-	opacity: 0.9;
+	opacity: 0.92;
+	font-size: 17px;
 	/* Position the tooltip text*/
-	position: absolute;
+	position:absolute;
+	padding: 5px 10px 5px 10px;
 	z-index: 1;
   }
   
-  .choix-perdant:hover .tooltiptext {
+  .tooltip:hover .tooltiptext {
 	visibility: visible;
+  }
+
+  .tooltip .tooltiptext::after { /* arrow display */
+	content: " ";
+	position: absolute;
+	top: -10px; /* At the bottom of the tooltip */
+	transform: rotate(180deg);
+	left: 50%;
+	margin-left: -5px;
+	border-width: 5px;
+	border-style: solid;
+	border-color: purple transparent transparent transparent;
   }
 
 

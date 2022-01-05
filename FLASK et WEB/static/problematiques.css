@@ -44,3 +44,45 @@ form.form_new_pb{    /*copie de ci dessus mais avec cases plus larges*/
 	cursor:pointer;
 	display:grid;
 }
+
+.tooltip{
+	position:relative;
+	display:inline-block;
+}
+
+  .tooltiptext {
+	visibility: hidden;
+	left: 50%;
+	top:100%;
+	width: max-content;
+	max-width: 400px;
+	transform: translate(-50%, 0);
+	overflow-wrap: break-word;	
+	background-color: purple;
+	color: #fff;
+	text-align: center;
+	padding: 5px 0;
+	border-radius: 6px;
+	opacity: 0.92;
+	font-size: 17px;
+	/* Position the tooltip text*/
+	position:absolute;
+	padding: 5px 10px 5px 10px;
+	z-index: 1;
+  }
+  
+  .tooltip:hover .tooltiptext {
+	visibility: visible;
+  }
+  	
+  .tooltip .tooltiptext::after { /*for the arrow */
+	content: " ";
+	position: absolute;
+	top: -10px; /* At the bottom of the tooltip */
+	transform: rotate(180deg);
+	left: 50%;
+	margin-left: -5px;
+	border-width: 5px;
+	border-style: solid;
+	border-color: purple transparent transparent transparent;
+  }
