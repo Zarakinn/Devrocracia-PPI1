@@ -10,7 +10,7 @@
         </a>
     {%endfor%}
 
-    {% if showform %} <!--possibilité d'en rajouter si on est connecté-->
+    {% if showform %} <!--possibilité d'en rajouter si on est connecté et l'utilisateur a cliqué sur le "+" (qui rend showform vraie)-->
         {% if session.mail %}
         <a class="tronc" href="/problematiques?">+</a>
         <form class="form_new_pb" method ="POST">

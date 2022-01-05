@@ -1,6 +1,5 @@
 {% extends 'header_layout.html' %}
 {%block css%}<link rel="stylesheet" href="../static/QuestionSolution.css">{%endblock%}
-
 {% block header %}
 
     <h1>{{prob[2]}}</h1>
@@ -16,7 +15,6 @@
         </button>
     </div>
 
-
     <div id="{{'-'+chosen_questions[i][0]}}" class="tablo-gagnants-perdants"> <!--sous tableau des questions qui montre la gagnante et les perdantes avec leurs pourcentages-->
         {%if i!=0%}
         {%for j in every_questions[i]%}
@@ -29,7 +27,6 @@
         {%endif%}
     </div>
 
-    
     <div id="{{'-'+chosen_solutions[i][0]}}" class="tablo-gagnants-perdants"> <!--sous tableau des solutions qui montre la gagnante et les perdantes avec leurs pourcentages-->
         {%for j in every_solutions[i]%}
             {% if j[2]==chosen_solutions[i][2] %}
@@ -43,10 +40,8 @@
             {% endif %}
         {%endfor%}
     </div>
-   
     {% endfor %}
 
-    
     <script>
         function show_hide(button_id,other_button_id) //cette fonction change le display css du bouton cliqué de grid à none (ça affiche ou non), si un autre grid est deja affiché elle le desactive au passage.
         {
@@ -70,7 +65,7 @@
     <!--On affiche pas les solutions suivantes ni le bouton si la problématique est résolue-->
     {% if  chosen_solutions == [] or
         (chosen_solutions != [] and
-        not chosen_solutions[-1][2] == "La problématique est résolue" and
+        not chosen_solutions[-1][2] == "La problématique est résolue" and <!--L'information de l'état résolu ou non est dans le titre de la dernière proposition votée-->
         not chosen_questions[-1][2] == "La problématique est résolue") %}
         <div class="tablo-question-solution">
             <button class="question-button-only">{{last_question[2]}}</button> <!--cas où on est en phase question-->
@@ -90,8 +85,7 @@
                     {% endif %}
                 {%endfor%}
 
-
-                {% if showform %}
+                {% if showform %}  <!--Si l'utilisateur a cliqué sur le "+" pour ajouter une proposition, showform est vraie-->
                     {% if session.mail %}
                         <a class="choix" href="/problematique/{{prob[0]}}">+</a>
                         <form class="form_new_pb" method ="POST">
@@ -103,7 +97,7 @@
                         <a class="tronc">+</a>
                         <p> Tu dois te connecter pour ajouter une Problématique</p>
                     {% endif %}
-                {% elif not(etat=="backtracking") %}
+                {% elif not(etat=="backtracking") %} <!--On ne doit pas pouvoir ajouter de proposition si on vote pour où revenir dans le backtracking-->
                     <a class="choix" tittle="Ajoute une proposition" href="/problematique/{{prob[0]}}?showform=True">+</a>
                 {% endif %}    
             </div>
@@ -116,13 +110,13 @@
                     <a class="choix">{{j[2]}}</a>
                 {%endfor%}
             </div>
-
             <h2>Connectes-toi pour ajouter des solutions, envoyer des messages ou voter</h2>
         {% endif %}
     {% else %}
         <h2>La problématique est résolue et archivée. Joli travail !</h2>
     {% endif %}
     
+    <!--Chat-->
     {% if session.mail %}
     <form class="form_new_msg" method ="POST">
         <input class="message" autocomplete="off" name="message" placeholder="Message à envoyer" type="text">
@@ -141,5 +135,4 @@
             <span class="date">{{m[4]}}</span></p>
         {% endfor %}
     </div>
-
 {% endblock %}
