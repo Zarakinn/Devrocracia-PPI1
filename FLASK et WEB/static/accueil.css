@@ -11,3 +11,7 @@ a.prob-button{
 	cursor:pointer;
 	display:grid;
 }
+
+.zone_text{
+	margin:30px;
+}
