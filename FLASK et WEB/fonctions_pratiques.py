@@ -541,9 +541,10 @@ def Valid_Email(email :str) -> bool:
     On vérifie que le format proposé en email vérifie quelque condition de base:
     il est de la forme xxx@xxx.fr|eu|com|net
     """
+    assert type(email)==str, "L'argument n'est pas un string"
+
     if email == "" or email == None:
         return False
-
     email_decomposé = email.split("@")
     if len(email_decomposé) != 2:
         return False

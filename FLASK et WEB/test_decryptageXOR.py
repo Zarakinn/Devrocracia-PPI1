@@ -35,7 +35,7 @@ def test_alpha():
     m=50
     for _ in range(m):
         n = random.randrange(0,999)
-        test_encrypted_string = ''.join(random.choice(alphabet) for _ in range(2*n)) # Merci à Mr Oster Gerald pour cette fonction git -> exam4
+        test_encrypted_string = ''.join(random.choice(hexa) for _ in range(2*n)) # Merci à Mr Oster Gerald pour cette fonction git -> exam4
         test_key = ''.join(random.choice(alphabet) for _ in range(n))
 
         decrypted_test = decryptageXOR(test_encrypted_string,test_key)
