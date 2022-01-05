@@ -157,6 +157,37 @@ def Get_Chosen_Solution(questions : list) -> list:
         print("Erreur lors de la récupération des solutions choisi", error)
 
 
+def Ajout_pourcentage_vote(choix : list ) -> list:
+    """
+    Prend une liste de solutions à une même question sous la forme d'une liste de tuple, et renvoie cette même liste en rajoutant le pourcentage de votes ce chaque solution à la fin 
+    """
+    assert len(choix) > 0, "erreur, il n'y a pas de choix"
+    for c in choix:
+        assert type(c)==tuple, "un des choix n'est pas sous la forme de tuples"
+        assert len(c)==5, "un choix n'est pas de taille 5"
+        assert type(c[0])==type(c[1])==int and type(c[2])==type(c[3])==str, "type invalide"
+        assert type(c[4])==int, "le champs votes n'est pas un entier"
+        vote = c[4]
+        assert vote >= 0, "erreur, nombre de votes négatif"
+    
+    q_id = choix[0][1]
+    nb_total_vote=0
+    for c in choix:
+        assert c[1] == q_id, "solutions pas associé aux même votes"
+        nb_total_vote+=c[4]
+    if nb_total_vote==0:
+        nb_total_vote=1 # on évite le zero division error, et on altère pas si il n'y a aucun vote
+
+    for i,c in enumerate(choix):
+        c=list(c)
+        c.append(int((c[4]/nb_total_vote)*10000)/100) # Approximation à la deuxième virgule près
+        c=tuple(c)
+        choix[i]=c
+    
+    return choix
+
+
+
 def Get_All_Solutions(chosen_question:list):
     """
     On souhaite récupérer la liste de toutes les solutions qui ont été proposé dans cette problématique, pour cela on part de la liste des questions qui ont été posé
@@ -170,17 +201,9 @@ def Get_All_Solutions(chosen_question:list):
             cursor.execute("SELECT * FROM solutions WHERE question_id=?",(q[0],))
             solutions = cursor.fetchall() #liste de solutions proposé pour la question q
 
-            nb_total_vote=0
-            for s in solutions:
-                nb_total_vote+=s[4]
-            if nb_total_vote==0:
-                nb_total_vote=1
-            for i,s in enumerate(solutions):
-                s=list(s)
-                s.append(int((s[4]/nb_total_vote)*10000)/100)
-                s=tuple(s)
-                solutions[i]=s
-            all_solutions.append(solutions)
+            solutions_w_pourcent = Ajout_pourcentage_vote(solutions)
+            all_solutions.append(solutions_w_pourcent)
+
         print("Récupération de toutes les solutions réussi, il y en a = " + str(len(all_solutions)))
         cursor.close()
         connexion.close()
@@ -205,18 +228,9 @@ def Get_All_Questions(chosen_question : list):
             cursor.execute("SELECT * FROM solutions WHERE question_id=?",(chosen_question[i][4],)) # question avec le meme choix parent
             questions = cursor.fetchall()
 
-            nb_total_vote=0
-            for q in questions:
-                nb_total_vote+=q[4]
-            if nb_total_vote==0:
-                nb_total_vote=1
+            solutions_w_pourcent = Ajout_pourcentage_vote(questions)
+            all_questions.append(solutions_w_pourcent)
 
-            for i,q in enumerate(questions):
-                q=list(q)
-                q.append(int((q[4]/nb_total_vote)*10000)/100)
-                q=tuple(q)
-                questions[i]=q
-            all_questions.append(questions)
         cursor.close()
         connexion.close()
         print("Récupération de toutes les questions effectués")
