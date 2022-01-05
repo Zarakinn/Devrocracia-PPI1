@@ -692,7 +692,7 @@ def decryptageXOR(encrypted_text : str, key = key) -> str:
             assert carac in alphabet,"Clef ne contenant pas que des chiffres et lettres sans accent"
     for carac in encrypted_text:
             assert carac in hexa,"Texte ne contenant pas que de l'hexadécimal"
-    assert len(encrypted_text%2)==0,"Texte encrypté de longueur impair"
+    assert len(encrypted_text)%2==0,"Texte encrypté de longueur impair"
             
 
     if encrypted_text=="" or encrypted_text == None:

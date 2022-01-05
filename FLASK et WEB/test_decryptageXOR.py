@@ -7,8 +7,6 @@ def test_vide():
     with pytest.raises(Exception, match="clef vide"):
         assert cryptageXOR("","")
 
-
-
 def test_wrong_type():
     with pytest.raises(Exception, match="Le texte ou la clef n'est pas un texte"):
         assert decryptageXOR("12a27e",7654322)
@@ -17,18 +15,22 @@ def test_wrong_type():
 
 def test_clef_valide():
     with pytest.raises(Exception, match="Clef ne contenant pas que des chiffres et lettres sans accent"):
-        assert cryptageXOR("test string","%ù")
+        assert decryptageXOR("1212ab98","%ù")
     
-def test_hexa():
+def test_alpha():
     m=50
     for _ in range(m):
         n = random.randrange(0,999)
-        test_string = ''.join(random.choice(alphabet) for _ in range(n)) # Merci à Mr Oster Gerald pour cette fonction git -> exam4
+        test_encrypted_string = ''.join(random.choice(hexa) for _ in range(2*n)) # Merci à Mr Oster Gerald pour cette fonction git -> exam4
         test_key = ''.join(random.choice(alphabet) for _ in range(n))
 
-        encrypted_test = cryptageXOR(test_string,test_key)
-        for carac in encrypted_test:
-            assert carac in hexa
+        decrypted_test = decryptageXOR(test_encrypted_string,test_key)
+        for carac in decrypted_test:
+            assert carac in alphabet
+
+def test_pair():
+    with pytest.raises(Exception, match="Texte encrypté de longueur impair"):
+        assert decryptageXOR("1212ab981","testkey")    
 
 def test_valide():
 
