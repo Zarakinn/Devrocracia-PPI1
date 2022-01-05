@@ -112,21 +112,20 @@ def problematique(id_prob):
         message_vote = "Votez pour la prochaine question ou proposez-en une nouvelle."
 
     most_voted_solution = fonctions_pratiques.Get_Most_Voted_Solution(last_question[0])
-        #Création d'une nouvelle branche à partir de la solution la plus votée
+    #Création d'une nouvelle branche à partir de la solution la plus votée
     if request.args.get("cloture") and most_voted_solution != None:        
         most_voted_solution_texte = most_voted_solution[2]
-        print("MOST VOTED SOLUTION DESCRIPTION:" + most_voted_solution_texte)
-        redirect_to = "/problematique/"+str(id_prob)
-        if all_chosen_solutions != [] and all_chosen_solutions[-1][2] == "Backtracking":
-            backtrack_to = most_voted_solution[3][9:] #Ce parametre a été inscrit dans la description de la solution votée
-            i=0 #On ne connait pas le nombre de chiffre dans la donnée donc on prend toute la chaîne de chiffre
+        redirect_to = "/problematique/"+str(id_prob) #on retire le paramètre indiquant qu'il faut cloturer
+        if all_chosen_solutions != [] and all_chosen_solutions[-1][2] == "Backtracking": #si l'état était déjà en backtracking
+            backtrack_to = most_voted_solution[3][9:] #L'id de la question à laquelle revenir a été inscrit dans la description de la solution votée: "(hauteur X) description"
+            i=0 #On ne connait pas le nombre de chiffre, donc on prend tous les chiffes avant la parenthèse fermante à l'aide de la boucle ci-dessous
             while backtrack_to[i+1] != ")":
                 i+=1
             backtrack_to = backtrack_to[:i+1]
             print("backtracking to :"+str(backtrack_to))
             fonctions_pratiques.Do_Backtracking(backtrack_to, id_prob)
             return redirect(redirect_to)
-        elif most_voted_solution_texte == "Backtracking":
+        elif most_voted_solution_texte == "Backtracking": #si les utilisateurs ont voté pour démarrer le backtracking
             fonctions_pratiques.Init_Backtracking_Vote(id_prob, last_question[0], chosen_solutions) #OS DE CONTENTION RIGHT THERE
             return redirect(redirect_to)
         elif etat == "vote solution":

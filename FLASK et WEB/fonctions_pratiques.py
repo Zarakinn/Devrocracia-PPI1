@@ -288,11 +288,10 @@ def Etend_Branche(titre,utilisateur,question_parent, pb_parent_id) -> None :
         sql = "INSERT INTO question (id,DateCreation,titre,auteur_email,question_parent_id, pb_parent_id) VALUES (?, ?, ?, ?, ?, ?)"
         cursor.executemany(sql, donnees)
 
+        #on bloque le backtracking et l'archivage trop tôt dans la branche
         cursor.execute("SELECT count(*) FROM question where pb_parent_id = ?",(pb_parent_id,))
         count = cursor.fetchone()[0]
-
-
-        if count > 3: #on bloque le backtracking et l'archivage trop tôt dans la branche
+        if count > 3: 
             donnees=[(new_id_sol, new_id_question, "Backtracking", "Vote pour le retour en arrière.", 0)]
             sql = "INSERT INTO solutions (id, question_id, titre, texte, nb_vote) VALUES (?, ?, ?, ?, ?)"
             cursor.executemany(sql, donnees)
@@ -331,12 +330,14 @@ def Init_Backtracking_Vote(pb_parent_id, question_parent_id, solution_list) -> N
         cursor.execute("SELECT date('now')")
         date=cursor.fetchone()[0]
 
+        #insère la question "où revenir" qui sera parent des options de backtracking
         donnees=[(new_id_question, date, "Où revenir ?", None, question_parent_id, pb_parent_id)]
         sql = "INSERT INTO question (id,DateCreation,titre,auteur_email,question_parent_id, pb_parent_id) VALUES (?, ?, ?, ?, ?, ?)"
         cursor.executemany(sql, donnees)
 
+        #on ajoute les solutions
         for i,question in enumerate(solution_list[1:]):
-            #question[1]: question à laquelle la solution répond initialement, nécessaire pour savoir où backtracker
+            #question[1] est l'id de la question à laquelle une solution répond initialement, nécessaire pour savoir où backtracker
             donnees=[(new_id_sol+i, new_id_question, question[2], "(Hauteur "+str(question[1])+") "+question[3], 0)]
             sql = "INSERT INTO solutions (id, question_id, titre, texte, nb_vote) VALUES (?, ?, ?, ?, ?)"
             cursor.executemany(sql, donnees)
@@ -351,11 +352,9 @@ def Init_Backtracking_Vote(pb_parent_id, question_parent_id, solution_list) -> N
 
 def Do_Backtracking(backtrack_to_id, pb_parent_id) -> None :
     """
-    Coupe toutes les questions postérieures à celle où on backtrack et réimplente la question en question
+    Coupe toutes les questions postérieures à celle où on backtrack et réimplente la question à laquelle backtracker
     """ 
     try:
-        print("_________________________________________________________________________")
-        print(backtrack_to_id, pb_parent_id)
         connexion = sqlite3.connect(database)
         cursor = connexion.cursor()
 
@@ -365,23 +364,13 @@ def Do_Backtracking(backtrack_to_id, pb_parent_id) -> None :
             new_id_question=[0]
         new_id_question=new_id_question[0]+1
 
-        #Coupage
+        #Coupage de toutes les questions postérieures à celle où on backtrack
         cursor.execute("UPDATE question SET branche_morte = 1 WHERE pb_parent_id = ? AND id > ?", (pb_parent_id, backtrack_to_id))
-        cursor.execute("DELETE FROM question WHERE branche_morte = 1") #Pour l'instant pas de mémoire du backtracking
-
-        #Reimplementation
-        cursor.execute("SELECT DateCreation, titre, auteur_email, question_parent_id FROM question where id = ?",(backtrack_to_id,))
-        question_to_restore=cursor.fetchone()
-        cursor.execute("DELETE FROM question WHERE id = ?",(backtrack_to_id,)) #pour remplacer l'ancienne question par celle à la nouvelle id
-        DateCreation, titre, auteur_email, question_parent_id = question_to_restore
-        print("QUESTION TO RESTOR")
-        print(question_to_restore)
-        donnees=[(new_id_question,DateCreation,titre,auteur_email,question_parent_id,pb_parent_id)]
-        sql = "INSERT INTO question (id,DateCreation,titre,auteur_email,question_parent_id, pb_parent_id) VALUES (?, ?, ?, ?, ?, ?)"
-        cursor.executemany(sql, donnees)        
+        cursor.execute("DELETE FROM question WHERE branche_morte = 1") #(Pour l'instant pas de mémoire du backtracking)
+        #Reimplementation de la question à laquelle backtracker: on change son id et elle devient nouvelle d'un point de vue de la BD
+        cursor.execute("UPDATE question SET id = ? WHERE id = ?", (new_id_question, backtrack_to_id))        
 
         connexion.commit()
-        print("Do_Backtracking succès")
         cursor.close()
         connexion.close()
     except sqlite3.Error as error:
@@ -420,7 +409,12 @@ def Vote(solution_id, id_question, utilisateur) -> None :
         print("Erreur lors du vote :", error)
         return
 
-def Break_Text(text, char_per_line):
+def Break_Text(text : str, char_per_line : int) -> str:
+    """
+    Ajoute des <br> dans les chaines tout les *char_per_line* caractères
+    (le choix de <br> en tant que séparateur est arbitraire, cf problematique.html)
+    Utile pour le formattage du texte dans l'affichage du chat
+    """
     broke_text = ""
     while len(text) > char_per_line:
         broke_text += text[:char_per_line]
