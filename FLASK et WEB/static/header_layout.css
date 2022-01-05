@@ -17,6 +17,7 @@ header{
 	padding: 5px 10px;
     position: sticky;          /*le header suit le défilement, utile pour les longues pages*/
     top:0;
+    z-index: 10000;
 }
 
 header .inheader{
