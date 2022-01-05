@@ -4,7 +4,7 @@ h1 {
     text-align: center;
 }
 a.prob-button{
-	background-color: #1ab26b;
+	background-color: #028A0F;
 	width:max-content;
 	border:none;
 	color:white;
@@ -58,7 +58,7 @@ form.form_new_pb{    /*copie de ci dessus mais avec cases plus larges*/
 	max-width: 400px;
 	transform: translate(-50%, 0);
 	overflow-wrap: break-word;	
-	background-color: purple;
+	background-color: #333;
 	color: #fff;
 	text-align: center;
 	padding: 5px 0;
@@ -84,5 +84,5 @@ form.form_new_pb{    /*copie de ci dessus mais avec cases plus larges*/
 	margin-left: -5px;
 	border-width: 5px;
 	border-style: solid;
-	border-color: purple transparent transparent transparent;
+	border-color: #333 transparent transparent transparent;
   }

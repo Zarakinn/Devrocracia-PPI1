@@ -20,7 +20,7 @@ div.tablo-question-solution{
 }
 
 button.question-button{
-	background-color: #1ab26b;
+	background-color: #028A0F;
 	width:max-content;
 	border:none;
 	color:white;
@@ -46,7 +46,7 @@ button.solution-button{
 }
 
 button.question-button-only{
-	background-color: #1ab26b;
+	background-color: #028A0F;
 	width:max-content;
 	border:none;
 	color:white;
@@ -71,7 +71,7 @@ div.tablo-gagnants-perdants{
 }
 
 .choix{
-	background-color: #FDD017;
+	background-color: #FFD300;
 	width:max-content;
 	border:none;
 	color:white;
@@ -84,7 +84,7 @@ div.tablo-gagnants-perdants{
 }
 
 .choisi{
-	background-color: #C68E17;
+	background-color: #7A523C;
 	width:max-content;
 	border:none;
 	color:white;
@@ -97,7 +97,7 @@ div.tablo-gagnants-perdants{
 }
 
 .choix-gagnant{
-	background-color: #028A0F;
+	background-color: #74B72E;
 	width:max-content;
 	border:none;
 	color:white;
@@ -134,7 +134,7 @@ div.tablo-gagnants-perdants{
 	overflow-wrap: break-word;
 	max-width: 400px;
 	transform: translate(-50%, 0);
-	background-color: purple;
+	background-color: #333;
 	color: #fff;
 	text-align: center;
 	padding: 5px 0;
@@ -160,7 +160,7 @@ div.tablo-gagnants-perdants{
 	margin-left: -5px;
 	border-width: 5px;
 	border-style: solid;
-	border-color: purple transparent transparent transparent;
+	border-color: #333 transparent transparent transparent;
   }
 
 
