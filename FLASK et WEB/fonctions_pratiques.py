@@ -412,7 +412,6 @@ def Vote(solution_id, id_question, utilisateur) -> None :
 def Break_Text(text : str, char_per_line : int) -> str:
     """
     Ajoute des <br> dans les chaines tout les *char_per_line* caractères
-    (le choix de <br> en tant que séparateur est arbitraire, cf problematique.html)
     Utile pour le formattage du texte dans l'affichage du chat
     """
     broke_text = ""
