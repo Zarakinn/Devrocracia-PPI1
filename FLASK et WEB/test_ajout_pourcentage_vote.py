@@ -5,9 +5,9 @@ def sample(n=50):
     return [[i,0,"","",random.randrange(0,9999)] for i in range(n)] # fournit une liste de solution 
 def tuple_sample(n=50):
     samples = sample()
-
     for i in range(len(samples)):
-        samples[i] = tuple(sample[i])
+        samples[i] = tuple(samples[i])
+    return samples
 
 def test_not_tuple():
     with pytest.raises(Exception, match="un des choix n'est pas sous la forme de tuples"):
@@ -61,6 +61,13 @@ def test_right():
 
     s2 = s1 + [(1,0,"","",5)]
     assert Ajout_pourcentage_vote(s2) == [(0,0,"","",5,50.0),(1,0,"","",5,50.0)]
+
+    t5=tuple_sample()
+    t6 = Ajout_pourcentage_vote(t5)
+    sum_per=0
+    for sam in t6:
+        sum_per+=sam[5]
+    assert abs(100-sum_per) < 0.1 + len(t6)*0.02 # Vérifie que la somme des pourcentage est proche de 100% dans la limite d'une approximation
 
 if __name__ == "__main__":
    pytest.main([__file__, "-k", "test_", "-v", "-s"])
