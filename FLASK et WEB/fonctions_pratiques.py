@@ -161,7 +161,8 @@ def Ajout_pourcentage_vote(choix : list ) -> list:
     """
     Prend une liste de solutions à une même question sous la forme d'une liste de tuple, et renvoie cette même liste en rajoutant le pourcentage de votes ce chaque solution à la fin 
     """
-    assert len(choix) > 0, "erreur, il n'y a pas de choix"
+    if len(choix)==0:
+        return []
     for c in choix:
         assert type(c)==tuple, "un des choix n'est pas sous la forme de tuples"
         assert len(c)==5, "un choix n'est pas de taille 5"
@@ -288,15 +289,18 @@ def Etend_Branche(titre,utilisateur,question_parent, pb_parent_id) -> None :
         count = cursor.fetchone()[0]
 
 
-        if count > 3: #on bloque le backtracking trop tôt dans la branche
+        if count > 3: #on bloque le backtracking et l'archivage trop tôt dans la branche
             donnees=[(new_id_sol, new_id_question, "Backtracking", "Vote pour le retour en arrière.", 0)]
+            sql = "INSERT INTO solutions (id, question_id, titre, texte, nb_vote) VALUES (?, ?, ?, ?, ?)"
+            cursor.executemany(sql, donnees)
+            donnees=[(new_id_sol+1, new_id_question,
+            "La problématique est résolue", "Voter pour cet élément si vous considérez que les solutions votées sont suffisantes pour résoudre le problème initial.",0)]
             sql = "INSERT INTO solutions (id, question_id, titre, texte, nb_vote) VALUES (?, ?, ?, ?, ?)"
             cursor.executemany(sql, donnees)
         
         connexion.commit()
         cursor.close()
         connexion.close()
-        print("Connexion SQLite est fermée")
     except sqlite3.Error as error:
         print("Erreur lorsque la branche a été étendu", error)
 
@@ -365,7 +369,7 @@ def Do_Backtracking(backtrack_to_id, pb_parent_id) -> None :
         #Reimplementation
         cursor.execute("SELECT DateCreation, titre, auteur_email, question_parent_id FROM question where id = ?",(backtrack_to_id,))
         question_to_restore=cursor.fetchone()
-        cursor.execute("DELETE FROM question WHERE id = ?",(backtrack_to_id,)) #pour remplacer l'ancienne question par celle au nouvel idée
+        cursor.execute("DELETE FROM question WHERE id = ?",(backtrack_to_id,)) #pour remplacer l'ancienne question par celle à la nouvelle id
         DateCreation, titre, auteur_email, question_parent_id = question_to_restore
         print("QUESTION TO RESTOR")
         print(question_to_restore)
